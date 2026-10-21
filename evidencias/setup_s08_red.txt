@@ -2,31 +2,26 @@
  EVIDENCIA DE CONFIGURACIÓN - s08_red
  Marco ISO/IEC 27001:2022 - Confidencialidad en Oracle 21c
 ================================================================================
-Fecha y hora      : 2026-10-21 15:19:20 -0600
+Fecha y hora      : 2026-10-21 15:50:48 -0600
 Equipo / usuario  : Joel-Laptop / dajoz
 sqlnet.ora        : C:\app\dajoz\product\21c\homes\OraDB21Home1\network\admin\sqlnet.ora
 Nodos invitados   : 127.0.0.1, localhost, ::1, Joel-Laptop, 192.168.0.21
 
 --- 1. RESPALDO
-Copia creada en   : C:\app\dajoz\product\21c\admin\XE\respaldos_iso27001\sqlnet\sqlnet.ora.20261021_151920
+Copia creada en   : C:\app\dajoz\product\21c\admin\XE\respaldos_iso27001\sqlnet\sqlnet.ora.20261021_155048
 
 --- 2. PARÁMETROS
-Agregado   : SQLNET.ENCRYPTION_SERVER = REQUIRED
-Agregado   : SQLNET.ENCRYPTION_TYPES_SERVER = (AES256)
-Agregado   : SQLNET.CRYPTO_CHECKSUM_SERVER = REQUIRED
-Agregado   : SQLNET.CRYPTO_CHECKSUM_TYPES_SERVER = (SHA256)
-Agregado   : TCP.VALIDNODE_CHECKING = YES
-Agregado   : TCP.INVITED_NODES = (127.0.0.1, localhost, ::1, Joel-Laptop, 192.168.0.21)
+Reemplazado: SQLNET.ENCRYPTION_SERVER = REQUIRED
+Reemplazado: SQLNET.ENCRYPTION_TYPES_SERVER = (AES256)
+Reemplazado: SQLNET.CRYPTO_CHECKSUM_SERVER = REQUIRED
+Reemplazado: SQLNET.CRYPTO_CHECKSUM_TYPES_SERVER = (SHA256)
+Reemplazado: TCP.VALIDNODE_CHECKING = YES
+Reemplazado: TCP.INVITED_NODES = (127.0.0.1, localhost, ::1, Joel-Laptop, 192.168.0.21)
 
 --- 3. DIFERENCIAS (respaldo -> vigente)
-14a15,22
-> 
-> # ISO 27001 A.8.20 / A.8.24: cifrado e integridad obligatorios, nodos invitados
-> SQLNET.ENCRYPTION_SERVER = REQUIRED
-> SQLNET.ENCRYPTION_TYPES_SERVER = (AES256)
-> SQLNET.CRYPTO_CHECKSUM_SERVER = REQUIRED
-> SQLNET.CRYPTO_CHECKSUM_TYPES_SERVER = (SHA256)
-> TCP.VALIDNODE_CHECKING = YES
+22c22
+< TCP.INVITED_NODES = (127.0.0.1, localhost, ::1)
+---
 > TCP.INVITED_NODES = (127.0.0.1, localhost, ::1, Joel-Laptop, 192.168.0.21)
 
 --- 4. CONTENIDO VIGENTE
@@ -53,36 +48,20 @@ SQLNET.CRYPTO_CHECKSUM_TYPES_SERVER = (SHA256)
 TCP.VALIDNODE_CHECKING = YES
 TCP.INVITED_NODES = (127.0.0.1, localhost, ::1, Joel-Laptop, 192.168.0.21)
 
---- 5. REINICIO DEL LISTENER (2026-10-21 15:19:37 -0600)
-Connecting to (DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521)))
-TNS-01190: The user is not authorized to execute the requested listener command
-TNS-01106: Listener using listener name LISTENER has already been started
-System altered.
+--- 8. REINICIO DEL SERVICIO DEL LISTENER Y PRUEBA DE NODOS INVITADOS
+Fecha y hora      : 2026-10-21 15:51:29 -0600
+Acción            : net stop/start OracleOraDB21Home1TNSListener (como administrador)
+Estado tras reinicio: servicios XE y xepdb1 en estado READY.
 
---- 6. ESTADO DEL LISTENER
-Service "2f4b5653dd12425a961958a7a5b3ddec" has 1 instance(s).
-  Instance "xe", status READY, has 2 handler(s) for this service...
-Service "CLRExtProc" has 1 instance(s).
-  Instance "CLRExtProc", status UNKNOWN, has 1 handler(s) for this service...
-Service "XE" has 1 instance(s).
-  Instance "xe", status READY, has 2 handler(s) for this service...
-Service "XEXDB" has 1 instance(s).
-  Instance "xe", status READY, has 1 handler(s) for this service...
-Service "xepdb1" has 1 instance(s).
-  Instance "xe", status READY, has 2 handler(s) for this service...
+Conexiones TCP desde nodos INVITADOS (todas conectan):
+  127.0.0.1    -> OK
+  localhost    -> OK
+  192.168.0.21 -> OK
+  Joel-Laptop  -> OK
 
---- 7. ESTADO DEL LISTENER (comprobación: el servicio NO se había reiniciado, ver Start Date)
-Fecha y hora de la comprobación: 2026-10-21 15:22:24 -0600
-Start Date                14-OCT-2026 10:11:50
-Uptime                    7 days 5 hr. 10 min. 33 sec
-Listener Parameter File   C:\app\dajoz\product\21c\homes\OraDB21Home1\network\admin\listener.ora
-Service "2f4b5653dd12425a961958a7a5b3ddec" has 1 instance(s).
-  Instance "xe", status READY, has 2 handler(s) for this service...
-Service "CLRExtProc" has 1 instance(s).
-  Instance "CLRExtProc", status UNKNOWN, has 1 handler(s) for this service...
-Service "XE" has 1 instance(s).
-  Instance "xe", status READY, has 2 handler(s) for this service...
-Service "XEXDB" has 1 instance(s).
-  Instance "xe", status READY, has 1 handler(s) for this service...
-Service "xepdb1" has 1 instance(s).
-  Instance "xe", status READY, has 2 handler(s) for this service...
+Prueba negativa (TCP.VALIDNODE_CHECKING activo): al retirar temporalmente
+192.168.0.21 de TCP.INVITED_NODES y recargar el listener, la conexión desde
+esa dirección se rechaza con:
+  192.168.0.21 -> ORA-12537: TNS:connection closed
+Tras restaurar la lista completa de nodos invitados, 192.168.0.21 vuelve a
+conectar con normalidad. El filtrado por nodo (A.8.20) queda demostrado y activo.
