@@ -80,6 +80,32 @@ Orden previsto de ejecución:
 
 Las credenciales nunca se guardan en el repositorio: se ingresan de forma interactiva al conectarse.
 
+### Implementación de los controles (`sql/01_setup`)
+
+Los scripts de configuración leen las rutas del servidor y las contraseñas desde `sql/config_local.sql`, que **no se versiona**. Para prepararlo, copiar la plantilla `sql/config_local.sql.ejemplo` como `sql/config_local.sql` y completar cada valor. Las contraseñas deben cumplir `ORA12C_STRONG_VERIFY_FUNCTION`.
+
+Orden de ejecución (como SYSDBA, desde la raíz del repositorio, en Git Bash con `MSYS_NO_PATHCONV=1` y `NLS_LANG=AMERICAN_AMERICA.AL32UTF8`):
+
+| Script | Contenedor | Qué hace | Evidencia |
+|---|---|---|---|
+| `s00_respaldo_pfile.sql` | CDB$ROOT | Respaldo del SPFILE como PFILE fuera del repositorio | `setup_s00_respaldo_pfile.txt` |
+| `s00_sqlnet.sh` (bash) | Servidor | Respaldo de sqlnet.ora y `SQLNET.ALLOWED_LOGON_VERSION_SERVER=12a` | `setup_s00_sqlnet.txt` |
+| `s01_tde_keystore.sql` | CDB$ROOT | WALLET_ROOT, **reinicio de la instancia**, keystore TDE unido, clave maestra, AUTO_LOGIN y respaldo | `setup_s01_tde_keystore.txt` |
+| `s02_esquema_clinica.sql` | XEPDB1 | Tablespace cifrado AES256, esquema CLINICA, datos ficticios y clasificación de columnas | `setup_s02_esquema_clinica.txt` |
+| `s03_usuarios_roles.sql` | XEPDB1 | Perfil de contraseñas, roles funcionales y usuarios nominales | `setup_s03_usuarios_roles.txt` |
+| `s04_vpd.sql` | XEPDB1 | Política VPD sobre CONSULTAS por médico tratante | `setup_s04_vpd.txt` |
+| `s05_redaction.sql` | XEPDB1 | Data Redaction de cédula, teléfono, diagnóstico y tratamiento | `setup_s05_redaction.txt` |
+| `s06_auditoria.sql` | XEPDB1 | Políticas de auditoría unificada | `setup_s06_auditoria.txt` |
+| `s07_clon_dev.sql` | XEPDB1 | Clon de desarrollo CLINICA_DEV con enmascaramiento estático | `setup_s07_clon_dev.txt` |
+
+Ejemplo:
+
+```
+printf '@sql/01_setup/s02_esquema_clinica.sql\nexit\n' | sqlplus -S -L "/ as sysdba"
+```
+
+Todos los scripts son re-ejecutables y se detienen ante el primer error (`WHENEVER SQLERROR EXIT`). Dependencias al re-ejecutar: s02 recrea el esquema, por lo que después deben repetirse s03 a s07; s03 recrea usuarios y roles, por lo que después deben repetirse s06 y s07.
+
 ## Metodología PHVA
 
 El proyecto sigue el ciclo Planificar-Hacer-Verificar-Actuar (PHVA), coherente con la estructura de mejora continua de ISO/IEC 27001:2022:

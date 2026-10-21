@@ -1,0 +1,180 @@
+
+Session altered.
+
+
+================================================================================
+EVIDENCIA DE CONFIGURACIÓN - s03_usuarios_roles
+Marco ISO/IEC 27001:2022 - Confidencialidad en Oracle 21c
+================================================================================
+
+FECHA_HORA                   USUARIO    CONTENEDOR   CON_ID INSTANCIA  AUTENTICACION
+---------------------------- ---------- ------------ ------ ---------- -------------
+2026-10-21 15:02:36 -06:00   SYS        XEPDB1       3      xe         OS
+
+1 row selected.
+
+
+--- 1. LIMPIEZA DE OBJETOS PREVIOS
+Ejecutado: DROP USER MED_ROJAS CASCADE
+Ejecutado: DROP USER MED_MORA CASCADE
+Ejecutado: DROP USER RECEP_SOLIS CASCADE
+Ejecutado: DROP USER AUD_VEGA CASCADE
+Ejecutado: DROP USER DEV_CALVO CASCADE
+Ejecutado: DROP USER DBA_OPER CASCADE
+Ejecutado: DROP ROLE ROL_MEDICO
+Ejecutado: DROP ROLE ROL_RECEPCION
+Ejecutado: DROP ROLE ROL_AUDITOR
+Ejecutado: DROP ROLE ROL_DESARROLLO
+Ejecutado: DROP PROFILE perfil_clinica CASCADE
+
+PL/SQL procedure successfully completed.
+
+
+--- 2. PERFIL PERFIL_CLINICA
+
+Profile created.
+
+
+--- 3. ROLES
+
+Role created.
+
+
+Grant succeeded.
+
+
+Grant succeeded.
+
+
+Grant succeeded.
+
+
+Grant succeeded.
+
+
+Role created.
+
+
+Grant succeeded.
+
+
+Grant succeeded.
+
+
+Role created.
+
+
+Grant succeeded.
+
+
+Grant succeeded.
+
+
+Role created.
+
+
+Grant succeeded.
+
+
+--- 4. USUARIOS
+Usuario MED_ROJAS    creado con ROL_MEDICO
+Usuario MED_MORA     creado con ROL_MEDICO
+Usuario RECEP_SOLIS  creado con ROL_RECEPCION
+Usuario AUD_VEGA     creado con ROL_AUDITOR
+Usuario DEV_CALVO    creado con ROL_DESARROLLO
+Usuario DBA_OPER     creado con DBA
+
+PL/SQL procedure successfully completed.
+
+
+Grant succeeded.
+
+
+Grant succeeded.
+
+
+--- 5. VERIFICACIÓN
+Límites de PERFIL_CLINICA:
+
+RESOURCE_NAME             LIMIT
+------------------------- ------------------------------
+FAILED_LOGIN_ATTEMPTS     5
+INACTIVE_ACCOUNT_TIME     90
+PASSWORD_GRACE_TIME       DEFAULT
+PASSWORD_LIFE_TIME        90
+PASSWORD_LOCK_TIME        .0416
+PASSWORD_REUSE_MAX        5
+PASSWORD_REUSE_TIME       365
+PASSWORD_ROLLOVER_TIME    DEFAULT
+PASSWORD_VERIFY_FUNCTION  ORA12C_STRONG_VERIFY_FUNCTION
+
+9 rows selected.
+
+Usuarios creados (verificadores de contraseña: solo 12C):
+
+USERNAME     ACCOUNT_ST PROFILE         PASSWORD_VERSIONS
+------------ ---------- --------------- -----------------
+AUD_VEGA     OPEN       PERFIL_CLINICA  12C
+DBA_OPER     OPEN       PERFIL_CLINICA  12C
+DEV_CALVO    OPEN       PERFIL_CLINICA  12C
+MED_MORA     OPEN       PERFIL_CLINICA  12C
+MED_ROJAS    OPEN       PERFIL_CLINICA  12C
+RECEP_SOLIS  OPEN       PERFIL_CLINICA  12C
+
+6 rows selected.
+
+Roles asignados a los usuarios:
+
+GRANTEE      GRANTED_ROLE    ADM DEF
+------------ --------------- --- ---
+AUD_VEGA     ROL_AUDITOR     NO  YES
+DBA_OPER     DBA             NO  YES
+DEV_CALVO    ROL_DESARROLLO  NO  YES
+MED_MORA     ROL_MEDICO      NO  YES
+MED_ROJAS    ROL_MEDICO      NO  YES
+RECEP_SOLIS  ROL_RECEPCION   NO  YES
+
+6 rows selected.
+
+Privilegios de sistema de los roles funcionales:
+
+GRANTEE         PRIVILEGE
+--------------- --------------------
+ROL_AUDITOR     CREATE SESSION
+ROL_DESARROLLO  CREATE SESSION
+ROL_MEDICO      CREATE SESSION
+ROL_RECEPCION   CREATE SESSION
+
+4 rows selected.
+
+Privilegios sobre objetos de CLINICA:
+
+GRANTEE         TABLE_NAME   PRIVILEGE
+--------------- ------------ --------------------
+ROL_MEDICO      CONSULTAS    INSERT
+ROL_MEDICO      CONSULTAS    SELECT
+ROL_MEDICO      CONSULTAS    UPDATE
+ROL_MEDICO      MEDICOS      SELECT
+ROL_MEDICO      PACIENTES    SELECT
+ROL_RECEPCION   PACIENTES    INSERT
+ROL_RECEPCION   PACIENTES    SELECT
+ROL_RECEPCION   PACIENTES    UPDATE
+
+8 rows selected.
+
+Privilegios directos a usuarios o a PUBLIC sobre CLINICA (debe ser 0):
+
+PRIVILEGIOS_INDEBIDOS
+---------------------
+                    0
+
+1 row selected.
+
+Privilegios administrativos (archivo de contraseñas):
+
+USERNAME     SYSDB SYSBA SYSKM     CON_ID
+------------ ----- ----- ----- ----------
+DBA_OPER     FALSE TRUE  TRUE           3
+
+1 row selected.
+

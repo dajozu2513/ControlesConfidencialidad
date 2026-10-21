@@ -1,0 +1,23 @@
+-- Plantilla de configuración local. Copiar como sql/config_local.sql (que no se
+-- versiona) y reemplazar cada <CAMBIAR> por una contraseña que cumpla
+-- ORA12C_STRONG_VERIFY_FUNCTION: mínimo 9 caracteres, 2 mayúsculas,
+-- 2 minúsculas, 2 dígitos y 2 caracteres especiales (evitar & " @ / \ y espacios).
+
+-- Contenedor de trabajo
+DEFINE pdb_nombre        = XEPDB1
+
+-- Rutas del servidor (fuera del repositorio)
+DEFINE ruta_wallet_root  = C:\app\dajoz\product\21c\admin\XE\wallet
+DEFINE ruta_respaldos    = C:\app\dajoz\product\21c\admin\XE\respaldos_iso27001
+DEFINE ruta_datafiles    = C:\APP\DAJOZ\PRODUCT\21C\ORADATA\XE\XEPDB1
+
+-- Contraseñas
+DEFINE pwd_keystore      = "<CAMBIAR>"
+DEFINE pwd_clinica       = "<CAMBIAR>"
+DEFINE pwd_clinica_dev   = "<CAMBIAR>"
+DEFINE pwd_med_rojas     = "<CAMBIAR>"
+DEFINE pwd_med_mora      = "<CAMBIAR>"
+DEFINE pwd_recep_solis   = "<CAMBIAR>"
+DEFINE pwd_aud_vega      = "<CAMBIAR>"
+DEFINE pwd_dev_calvo     = "<CAMBIAR>"
+DEFINE pwd_dba_oper      = "<CAMBIAR>"

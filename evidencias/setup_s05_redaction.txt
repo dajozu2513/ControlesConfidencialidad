@@ -1,0 +1,60 @@
+
+Session altered.
+
+
+================================================================================
+EVIDENCIA DE CONFIGURACIÓN - s05_redaction
+Marco ISO/IEC 27001:2022 - Confidencialidad en Oracle 21c
+================================================================================
+
+FECHA_HORA                   USUARIO    CONTENEDOR   CON_ID INSTANCIA  AUTENTICACION
+---------------------------- ---------- ------------ ------ ---------- -------------
+2026-10-21 15:02:37 -06:00   SYS        XEPDB1       3      xe         OS
+
+1 row selected.
+
+
+--- 1. LIMPIEZA DE POLÍTICAS PREVIAS
+
+PL/SQL procedure successfully completed.
+
+
+--- 2. POLÍTICA POL_RED_PACIENTES
+Política POL_RED_PACIENTES creada (CEDULA, TELEFONO).
+
+PL/SQL procedure successfully completed.
+
+
+--- 3. POLÍTICA POL_RED_CONSULTAS
+Política POL_RED_CONSULTAS creada (DIAGNOSTICO, TRATAMIENTO).
+
+PL/SQL procedure successfully completed.
+
+
+--- 4. VERIFICACIÓN
+
+OBJECT_NAM POLICY_NAME        EXPRESSION                                              ENABLE
+---------- ------------------ ------------------------------------------------------- -------
+CONSULTAS  POL_RED_CONSULTAS  SYS_CONTEXT('SYS_SESSION_ROLES','ROL_MEDICO')='FALSE'   YES
+PACIENTES  POL_RED_PACIENTES  SYS_CONTEXT('SYS_SESSION_ROLES','ROL_RECEPCION')='TRUE' YES
+
+2 rows selected.
+
+
+OBJECT_NAM COLUMN_NAME  FUNCTION_TYPE        FUNCTION_PARAMETERS
+---------- ------------ -------------------- --------------------------------
+CONSULTAS  DIAGNOSTICO  FULL REDACTION
+CONSULTAS  TRATAMIENTO  FULL REDACTION
+PACIENTES  CEDULA       PARTIAL REDACTION    VFVVVVFVVVV,V-VVVV-VVVV,X,1,5
+PACIENTES  TELEFONO     PARTIAL REDACTION    VVVVFVVVV,VVVV-VVVV,X,1,4
+
+4 rows selected.
+
+Titulares de EXEMPT REDACTION POLICY (directo o por rol):
+
+GRANTEE                   PRIVILEGE
+------------------------- -----------------------
+EXP_FULL_DATABASE         EXEMPT REDACTION POLICY
+
+1 row selected.
+

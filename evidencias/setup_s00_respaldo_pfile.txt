@@ -1,0 +1,34 @@
+
+Session altered.
+
+
+================================================================================
+EVIDENCIA DE CONFIGURACIÓN - s00_respaldo_pfile
+Marco ISO/IEC 27001:2022 - Confidencialidad en Oracle 21c
+================================================================================
+
+FECHA_HORA                   USUARIO    CONTENEDOR   CON_ID INSTANCIA  AUTENTICACION
+---------------------------- ---------- ------------ ------ ---------- -------------
+2026-10-21 14:22:46 -06:00   SYS        CDB$ROOT     1      xe         OS
+
+1 row selected.
+
+
+--- 1. DIRECTORIO DE RESPALDO
+
+Directorio: C:\app\dajoz\product\21c\admin\XE\respaldos_iso27001\pfile
+
+--- 2. RESPALDO DEL SPFILE COMO PFILE
+PFILE generado: C:\app\dajoz\product\21c\admin\XE\respaldos_iso27001\pfile\initXE_20261021_142246.ora
+
+PL/SQL procedure successfully completed.
+
+
+SPFILE de origen:
+
+NAME                 VALUE
+-------------------- ----------------------------------------------------------------------
+spfile               C:\APP\DAJOZ\PRODUCT\21C\DATABASE\SPFILEXE.ORA
+
+1 row selected.
+

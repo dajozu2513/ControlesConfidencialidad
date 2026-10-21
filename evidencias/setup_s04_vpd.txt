@@ -1,0 +1,57 @@
+
+Session altered.
+
+
+================================================================================
+EVIDENCIA DE CONFIGURACIÓN - s04_vpd
+Marco ISO/IEC 27001:2022 - Confidencialidad en Oracle 21c
+================================================================================
+
+FECHA_HORA                   USUARIO    CONTENEDOR   CON_ID INSTANCIA  AUTENTICACION
+---------------------------- ---------- ------------ ------ ---------- -------------
+2026-10-21 15:02:36 -06:00   SYS        XEPDB1       3      xe         OS
+
+1 row selected.
+
+
+--- 1. LIMPIEZA DE LA POLÍTICA PREVIA
+Política POL_VPD_CONSULTAS no existía.
+
+PL/SQL procedure successfully completed.
+
+
+--- 2. FUNCIÓN CLINICA.FN_VPD_CONSULTAS
+
+Function created.
+
+No errors.
+
+--- 3. POLÍTICA POL_VPD_CONSULTAS
+Política POL_VPD_CONSULTAS creada y habilitada.
+
+PL/SQL procedure successfully completed.
+
+
+--- 4. VERIFICACIÓN
+
+OBJECT_NAM POLICY_NAME        FUNCTION          SEL INS UPD DEL CHK_OPTION ENABLE POLICY_T
+---------- ------------------ ----------------- --- --- --- --- ---------- ------ --------
+CONSULTAS  POL_VPD_CONSULTAS  FN_VPD_CONSULTAS  YES YES YES YES YES        YES    DYNAMIC
+
+1 row selected.
+
+
+OBJECT_NAME          OBJECT_TYP STATUS
+-------------------- ---------- -------
+FN_VPD_CONSULTAS     FUNCTION   VALID
+
+1 row selected.
+
+Predicado que devuelve la función para la sesión actual (SYS -> 1=0):
+
+PREDICADO
+--------------------
+1=0
+
+1 row selected.
+

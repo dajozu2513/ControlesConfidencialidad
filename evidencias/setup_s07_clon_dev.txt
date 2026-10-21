@@ -1,0 +1,135 @@
+
+Session altered.
+
+
+================================================================================
+EVIDENCIA DE CONFIGURACIÓN - s07_clon_dev
+Marco ISO/IEC 27001:2022 - Confidencialidad en Oracle 21c
+================================================================================
+
+FECHA_HORA                   USUARIO    CONTENEDOR   CON_ID INSTANCIA  AUTENTICACION
+---------------------------- ---------- ------------ ------ ---------- -------------
+2026-10-21 15:02:37 -06:00   SYS        XEPDB1       3      xe         OS
+
+1 row selected.
+
+
+--- 1. LIMPIEZA DE OBJETOS PREVIOS
+Ejecutado: DROP USER clinica_dev CASCADE
+
+PL/SQL procedure successfully completed.
+
+
+--- 2. USUARIO CLINICA_DEV
+Usuario CLINICA_DEV creado (bloqueado).
+
+PL/SQL procedure successfully completed.
+
+
+--- 3. CLINICA_DEV.MEDICOS
+
+Table created.
+
+
+--- 4. CLINICA_DEV.PACIENTES
+
+Table created.
+
+
+--- 5. CLINICA_DEV.CONSULTAS
+
+Table created.
+
+
+--- 6. CLAVES Y COMENTARIOS
+
+Table altered.
+
+
+Table altered.
+
+
+Table altered.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+--- 7. PRIVILEGIOS DE ROL_DESARROLLO
+
+Grant succeeded.
+
+
+Grant succeeded.
+
+
+Grant succeeded.
+
+
+--- 8. VERIFICACIÓN
+
+Session altered.
+
+Muestra de pacientes enmascarados:
+
+        ID CEDULA      NOMBRE       FECHA_NACI TELEFONO  CORREO                     DIRECCION
+---------- ----------- ------------ ---------- --------- -------------------------- ------------------------
+         1 9-0001-7805 Paciente 1   1985-04-10 3519-3456 paciente1@ejemplo.test     Dirección de prueba 1
+         2 9-0002-9361 Paciente 2   1978-12-16 2161-2854 paciente2@ejemplo.test     Dirección de prueba 2
+         3 9-0003-0950 Paciente 3   1992-04-15 5286-6335 paciente3@ejemplo.test     Dirección de prueba 3
+         4 9-0004-5088 Paciente 4   1969-04-14 9687-1715 paciente4@ejemplo.test     Dirección de prueba 4
+         5 9-0005-3205 Paciente 5   2001-04-18 5382-4895 paciente5@ejemplo.test     Dirección de prueba 5
+
+5 rows selected.
+
+Muestra de consultas enmascaradas:
+
+        ID PACIENTE_ID  MEDICO_ID DIAGNOSTICO                        TRATAMIENTO
+---------- ----------- ---------- ---------------------------------- ---------------------------------
+         1           1          1 Diagnóstico genérico de prueba F   Indicación genérica de prueba F
+         2           2          1 Diagnóstico genérico de prueba A   Indicación genérica de prueba A
+         3           3          2 Diagnóstico genérico de prueba F   Indicación genérica de prueba F
+         4           4          1 Diagnóstico genérico de prueba D   Indicación genérica de prueba D
+         5           5          1 Diagnóstico genérico de prueba A   Indicación genérica de prueba A
+
+5 rows selected.
+
+Coincidencias con datos de origen (todas deben ser 0):
+
+   CEDULAS    NOMBRES  TELEFONOS    CORREOS DIAGNOSTICOS
+---------- ---------- ---------- ---------- ------------
+         0          0          0          0            0
+
+1 row selected.
+
+Cédulas del clon fuera del formato 9-NNNN-NNNN (debe ser 0):
+
+CEDULAS_INVALIDAS
+-----------------
+                0
+
+1 row selected.
+
+Estado de CLINICA_DEV y privilegios otorgados:
+
+USERNAME     ACCOUNT_STATUS   DEFAULT_TABLESPACE
+------------ ---------------- ------------------------------
+CLINICA_DEV  LOCKED           USERS
+
+1 row selected.
+
+
+GRANTEE         TABLE_NAME   PRIVILEGE
+--------------- ------------ ----------------------------------------
+ROL_DESARROLLO  CONSULTAS    SELECT
+ROL_DESARROLLO  MEDICOS      SELECT
+ROL_DESARROLLO  PACIENTES    SELECT
+
+3 rows selected.
+

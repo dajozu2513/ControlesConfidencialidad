@@ -1,0 +1,108 @@
+
+Session altered.
+
+
+================================================================================
+EVIDENCIA DE CONFIGURACIÓN - s06_auditoria
+Marco ISO/IEC 27001:2022 - Confidencialidad en Oracle 21c
+================================================================================
+
+FECHA_HORA                   USUARIO    CONTENEDOR   CON_ID INSTANCIA  AUTENTICACION
+---------------------------- ---------- ------------ ------ ---------- -------------
+2026-10-21 15:02:37 -06:00   SYS        XEPDB1       3      xe         OS
+
+1 row selected.
+
+
+--- 1. LIMPIEZA DE POLÍTICAS PREVIAS
+Ejecutado: NOAUDIT POLICY POL_DATOS_SENSIBLES
+Ejecutado: NOAUDIT POLICY POL_CAMBIOS_PRIVILEGIOS
+Ejecutado: NOAUDIT POLICY POL_EXPORTACIONES
+Ejecutado: DROP AUDIT POLICY POL_PRIVILEGIADOS
+Ejecutado: DROP AUDIT POLICY POL_DATOS_SENSIBLES
+Ejecutado: DROP AUDIT POLICY POL_CAMBIOS_PRIVILEGIOS
+Ejecutado: DROP AUDIT POLICY POL_EXPORTACIONES
+
+PL/SQL procedure successfully completed.
+
+
+--- 2. POL_PRIVILEGIADOS
+
+Audit policy created.
+
+
+Audit succeeded.
+
+
+--- 3. POL_DATOS_SENSIBLES
+
+Audit policy created.
+
+
+Audit succeeded.
+
+
+--- 4. POL_CAMBIOS_PRIVILEGIOS
+
+Audit policy created.
+
+
+Audit succeeded.
+
+
+--- 5. POL_EXPORTACIONES
+
+Audit policy created.
+
+
+Audit succeeded.
+
+
+--- 6. VERIFICACIÓN
+Definición de las políticas del proyecto:
+
+POLICY_NAME              AUDIT_OPTION         OPTION_TYPE          OBJECT_S OBJECT_NAM
+------------------------ -------------------- -------------------- -------- ----------
+POL_CAMBIOS_PRIVILEGIOS  ALTER PROFILE        STANDARD ACTION      NONE     NONE
+POL_CAMBIOS_PRIVILEGIOS  ALTER ROLE           STANDARD ACTION      NONE     NONE
+POL_CAMBIOS_PRIVILEGIOS  ALTER USER           STANDARD ACTION      NONE     NONE
+POL_CAMBIOS_PRIVILEGIOS  CREATE ROLE          STANDARD ACTION      NONE     NONE
+POL_CAMBIOS_PRIVILEGIOS  CREATE USER          STANDARD ACTION      NONE     NONE
+POL_CAMBIOS_PRIVILEGIOS  DROP ROLE            STANDARD ACTION      NONE     NONE
+POL_CAMBIOS_PRIVILEGIOS  DROP USER            STANDARD ACTION      NONE     NONE
+POL_CAMBIOS_PRIVILEGIOS  GRANT                STANDARD ACTION      NONE     NONE
+POL_CAMBIOS_PRIVILEGIOS  REVOKE               STANDARD ACTION      NONE     NONE
+POL_DATOS_SENSIBLES      DELETE               OBJECT ACTION        CLINICA  CONSULTAS
+POL_DATOS_SENSIBLES      INSERT               OBJECT ACTION        CLINICA  CONSULTAS
+POL_DATOS_SENSIBLES      SELECT               OBJECT ACTION        CLINICA  CONSULTAS
+POL_DATOS_SENSIBLES      UPDATE               OBJECT ACTION        CLINICA  CONSULTAS
+POL_DATOS_SENSIBLES      DELETE               OBJECT ACTION        CLINICA  PACIENTES
+POL_DATOS_SENSIBLES      INSERT               OBJECT ACTION        CLINICA  PACIENTES
+POL_DATOS_SENSIBLES      SELECT               OBJECT ACTION        CLINICA  PACIENTES
+POL_DATOS_SENSIBLES      UPDATE               OBJECT ACTION        CLINICA  PACIENTES
+POL_EXPORTACIONES        EXPORT               DATAPUMP ACTION      NONE     NONE
+POL_PRIVILEGIADOS        ALL                  STANDARD ACTION      NONE     NONE
+
+19 rows selected.
+
+Políticas habilitadas en la PDB (incluye ORA_LOGON_FAILURES):
+
+POLICY_NAME              ENABLED_OPTION  ENTITY_NAME  ENTITY_T SUCCESS FAILURE
+------------------------ --------------- ------------ -------- ------- -------
+ORA_LOGON_FAILURES       BY USER         ALL USERS    USER     NO      YES
+ORA_SECURECONFIG         BY USER         ALL USERS    USER     YES     YES
+POL_CAMBIOS_PRIVILEGIOS  BY USER         ALL USERS    USER     YES     YES
+POL_DATOS_SENSIBLES      BY USER         ALL USERS    USER     YES     YES
+POL_EXPORTACIONES        BY USER         ALL USERS    USER     YES     YES
+POL_PRIVILEGIADOS        BY USER         DBA_OPER     USER     YES     YES
+
+6 rows selected.
+
+Confirmación de ORA_LOGON_FAILURES:
+
+ESTADO
+----------------------------------------
+ORA_LOGON_FAILURES habilitada
+
+1 row selected.
+

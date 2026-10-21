@@ -1,0 +1,353 @@
+
+Session altered.
+
+
+================================================================================
+EVIDENCIA DE CONFIGURACIÓN - s02_esquema_clinica
+Marco ISO/IEC 27001:2022 - Confidencialidad en Oracle 21c
+================================================================================
+
+FECHA_HORA                   USUARIO    CONTENEDOR   CON_ID INSTANCIA  AUTENTICACION
+---------------------------- ---------- ------------ ------ ---------- -------------
+2026-10-21 15:02:33 -06:00   SYS        XEPDB1       3      xe         OS
+
+1 row selected.
+
+
+--- 1. LIMPIEZA DE OBJETOS PREVIOS
+Ejecutado: DROP USER clinica CASCADE
+Ejecutado: DROP TABLESPACE clinica_data INCLUDING CONTENTS AND DATAFILES
+
+PL/SQL procedure successfully completed.
+
+
+--- 2. TABLESPACE CLINICA_DATA CIFRADO (AES256)
+
+Tablespace created.
+
+
+--- 3. USUARIO CLINICA
+Usuario CLINICA creado (bloqueado, sin CREATE SESSION).
+
+PL/SQL procedure successfully completed.
+
+
+--- 4. TABLAS
+
+Table created.
+
+
+Table created.
+
+
+Table created.
+
+
+Index created.
+
+
+Index created.
+
+
+--- 5. CLASIFICACIÓN DE COLUMNAS
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+--- 6. DATOS FICTICIOS
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+Commit complete.
+
+
+--- 7. BLOQUEO DE LA CUENTA CLINICA
+
+User altered.
+
+
+--- 8. VERIFICACIÓN
+Cifrado del tablespace:
+
+TABLESPACE_NAME ENCRYPTED ALGORITMO ESTADO_CIFRADO
+--------------- --------- --------- --------------
+CLINICA_DATA    YES       AES256    NORMAL
+
+1 row selected.
+
+Ubicación de las tablas:
+
+TABLE_NAME   TABLESPACE_NAME
+------------ ---------------
+CONSULTAS    CLINICA_DATA
+MEDICOS      CLINICA_DATA
+PACIENTES    CLINICA_DATA
+
+3 rows selected.
+
+Cantidad de filas:
+
+TABLA             FILAS
+------------ ----------
+MEDICOS               2
+PACIENTES            20
+CONSULTAS            30
+
+3 rows selected.
+
+Consultas por médico:
+
+USUARIO_BD    CONSULTAS
+------------ ----------
+MED_MORA             12
+MED_ROJAS            18
+
+2 rows selected.
+
+Clasificación de columnas:
+
+TABLA      COLUMNA           COMENTARIO
+---------- ----------------- ---------------------------------------------------------------------------
+CONSULTAS  DIAGNOSTICO       [SENSIBLE] Diagnóstico médico
+CONSULTAS  FECHA             [INTERNA] Fecha de la consulta
+CONSULTAS  ID                [INTERNA] Identificador interno de la consulta
+CONSULTAS  MEDICO_ID         [INTERNA] Médico tratante
+CONSULTAS  PACIENTE_ID       [CONFIDENCIAL] Paciente atendido (vincula a la persona con la atención)
+CONSULTAS  TRATAMIENTO       [SENSIBLE] Tratamiento indicado
+MEDICOS    ID                [INTERNA] Identificador interno del médico
+MEDICOS    NOMBRE            [PUBLICA] Nombre profesional del médico
+MEDICOS    USUARIO_BD        [INTERNA] Usuario de base de datos del médico (usado por la política VPD)
+PACIENTES  CEDULA            [CONFIDENCIAL] Cédula de identidad (N-NNNN-NNNN)
+PACIENTES  CORREO            [CONFIDENCIAL] Correo electrónico de contacto
+PACIENTES  DIRECCION         [CONFIDENCIAL] Dirección de residencia
+PACIENTES  FECHA_NACIMIENTO  [CONFIDENCIAL] Fecha de nacimiento del paciente
+PACIENTES  ID                [INTERNA] Identificador interno del paciente
+PACIENTES  NOMBRE            [CONFIDENCIAL] Nombre completo del paciente
+PACIENTES  TELEFONO          [CONFIDENCIAL] Teléfono de contacto (NNNN-NNNN)
+
+16 rows selected.
+
+Columnas sin clasificación (debe ser 0):
+
+SIN_CLASIFICAR
+--------------
+             0
+
+1 row selected.
+
+Estado de la cuenta propietaria:
+
+USERNAME   ACCOUNT_STATUS   DEFAULT_TABLESPACE
+---------- ---------------- ------------------------------
+CLINICA    LOCKED           CLINICA_DATA
+
+1 row selected.
+

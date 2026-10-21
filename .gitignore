@@ -33,3 +33,6 @@ desktop.ini
 # Editores
 .vscode/
 .idea/
+
+# Configuración local con contraseñas y rutas del servidor
+sql/config_local.sql
