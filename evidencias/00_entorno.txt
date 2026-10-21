@@ -1,0 +1,290 @@
+
+================================================================================
+VERIFICACIÓN DEL ENTORNO - ISO/IEC 27001:2022 / ORACLE 21c
+================================================================================
+
+FECHA_HORA                          USUARIO         CONTENEDOR      CON_ID SERVICIO                            PROTOCOLO  AUTENTICACION
+----------------------------------- --------------- --------------- ------ ----------------------------------- ---------- ---------------
+2026-10-21 14:01:14 -06:00          SYS             CDB$ROOT        1      SYS$USERS                           beq        OS
+
+1 row selected.
+
+
+--- 1. VERSIÓN Y EDICIÓN ------------------------------------------------------
+
+BANNER_FULL
+--------------------------------------------------------------------------------------------------------------
+Oracle Database 21c Express Edition Release 21.0.0.0.0 - Production
+Version 21.3.0.0.0
+
+
+1 row selected.
+
+
+INSTANCE_NAM HOST_NAME                 VERSION_FULL   EDITION  STATUS     DATABASE_T
+------------ ------------------------- -------------- -------- ---------- ----------
+xe           JOEL-LAPTOP               21.3.0.0.0     XE       OPEN       SINGLE
+
+1 row selected.
+
+
+--- 2. ARQUITECTURA MULTITENANT (CDB / PDB) -----------------------------------
+
+NAME         CDB  OPEN_MODE    LOG_MODE
+------------ ---- ------------ -------------
+XE           YES  READ WRITE   ARCHIVELOG
+
+1 row selected.
+
+
+ CON_ID NAME         OPEN_MODE    RESTRICTED
+------- ------------ ------------ ----------
+      2 PDB$SEED     READ ONLY    NO
+      3 XEPDB1       READ WRITE   NO
+
+2 rows selected.
+
+
+--- 3. OPCIONES DE SEGURIDAD (V$OPTION) ---------------------------------------
+
+OPCION                              VALOR
+----------------------------------- ------------
+Advanced Security                   NO LISTADA
+Transparent Data Encryption         TRUE
+Unified Auditing                    FALSE
+Fine-grained access control         TRUE
+Oracle Label Security               FALSE
+Oracle Database Vault               FALSE
+
+6 rows selected.
+
+
+--- 4. WALLET TDE Y CIFRADO EN REPOSO -----------------------------------------
+
+WRL_TYPE WRL_PARAMETER                                 STATUS               WALLET_TYPE  KEYSTORE FULLY_BAC  CON_ID
+-------- --------------------------------------------- -------------------- ------------ -------- --------- -------
+FILE     C:\APP\DAJOZ\PRODUCT\21C\ADMIN\XE\WALLET      NOT_AVAILABLE        UNKNOWN      NONE     UNDEFINED       1
+FILE     (nulo)                                        NOT_AVAILABLE        UNKNOWN      UNITED   UNDEFINED       2
+FILE     (nulo)                                        NOT_AVAILABLE        UNKNOWN      UNITED   UNDEFINED       3
+
+3 rows selected.
+
+
+PARAMETRO            VALOR                                                        MODIFICABL MODIFICABL
+-------------------- ------------------------------------------------------------ ---------- ----------
+tde_configuration    (sin valor)                                                  FALSE      IMMEDIATE
+wallet_root          (sin valor)                                                  FALSE      FALSE
+
+2 rows selected.
+
+
+TABLESPACE_NAME      ENCRYPTED
+-------------------- ---------
+SYSAUX               NO
+SYSTEM               NO
+TEMP                 NO
+UNDOTBS1             NO
+USERS                NO
+
+5 rows selected.
+
+
+--- 5. PAQUETES DBMS_REDACT Y DBMS_RLS ----------------------------------------
+
+PAQUETE         OBJECT_TYPE     STATUS
+--------------- --------------- ------------
+DBMS_REDACT     PACKAGE         VALID
+DBMS_REDACT     PACKAGE BODY    VALID
+DBMS_RLS        PACKAGE         VALID
+DBMS_RLS        PACKAGE BODY    VALID
+
+4 rows selected.
+
+
+--- 6. POLÍTICAS DE AUDITORÍA UNIFICADA HABILITADAS ---------------------------
+
+POLICY_NAME                         ENABLED_OPTION  ENTITY_NAME          ENTITY_T SUCCESS FAILURE
+----------------------------------- --------------- -------------------- -------- ------- -------
+ORA_LOGON_FAILURES                  BY USER         ALL USERS            USER     NO      YES
+ORA_SECURECONFIG                    BY USER         ALL USERS            USER     YES     YES
+
+2 rows selected.
+
+
+--- 7. CIFRADO DE RED DE LA SESIÓN ACTUAL -------------------------------------
+
+NETWORK_SERVICE_BANNER                                                                          AUTHENTICATI
+----------------------------------------------------------------------------------------------- ------------
+Authentication service for 64-bit Windows: Version 21.0.1.0.0 - Production                      INTERNAL
+Crypto-checksumming service for 64-bit Windows: Version 21.0.1.0.0 - Production                 INTERNAL
+Encryption service for 64-bit Windows: Version 21.0.1.0.0 - Production                          INTERNAL
+NTS Authentication service adapter for 64-bit Windows: Version 2.0.0.0.0 - Production           INTERNAL
+Oracle Bequeath NT Protocol Adapter for 64-bit Windows: Version 21.0.0.0.0 - Production         INTERNAL
+
+5 rows selected.
+
+
+--- 8. RESUMEN DE DISPONIBILIDAD ----------------------------------------------
+
+FUNCION                                      DISPONIBLE       EVIDENCIA
+-------------------------------------------- ---------------- ------------------------------------------------------------
+Cifrado en reposo (TDE)                      SI               V$OPTION Advanced Security / Transparent Data Encryption
+Wallet TDE abierto en este contenedor        NO               V$ENCRYPTION_WALLET.STATUS = NOT_AVAILABLE
+Data Redaction (DBMS_REDACT)                 SI               Paquete SYS.DBMS_REDACT en estado VALID
+Virtual Private Database (DBMS_RLS)          SI               SYS.DBMS_RLS VALID y V$OPTION Fine-grained access control
+Oracle Label Security                        NO               V$OPTION Oracle Label Security
+Auditoria unificada pura                     NO (modo mixto)  V$OPTION Unified Auditing (FALSE = modo mixto, igual se
+                                                              usan politicas)
+
+Politicas de auditoria unificada activas     SI               2 politica(s) en AUDIT_UNIFIED_ENABLED_POLICIES
+Cifrado de red en esta sesion                NO               Sin adaptador de cifrado activo (protocolo: beq)
+Integridad de red (checksum) en esta sesion  NO               Sin adaptador de checksum activo
+
+9 rows selected.
+
+
+=== FIN DE LA VERIFICACIÓN ===================================================
+
+================================================================================
+VERIFICACIÓN DEL ENTORNO - ISO/IEC 27001:2022 / ORACLE 21c
+================================================================================
+
+FECHA_HORA                          USUARIO         CONTENEDOR      CON_ID SERVICIO                            PROTOCOLO  AUTENTICACION
+----------------------------------- --------------- --------------- ------ ----------------------------------- ---------- ---------------
+2026-10-21 14:01:15 -06:00          SYS             XEPDB1          3      xepdb1                              beq        OS
+
+1 row selected.
+
+
+--- 1. VERSIÓN Y EDICIÓN ------------------------------------------------------
+
+BANNER_FULL
+--------------------------------------------------------------------------------------------------------------
+Oracle Database 21c Express Edition Release 21.0.0.0.0 - Production
+Version 21.3.0.0.0
+
+
+1 row selected.
+
+
+INSTANCE_NAM HOST_NAME                 VERSION_FULL   EDITION  STATUS     DATABASE_T
+------------ ------------------------- -------------- -------- ---------- ----------
+xe           JOEL-LAPTOP               21.3.0.0.0     XE       OPEN       SINGLE
+
+1 row selected.
+
+
+--- 2. ARQUITECTURA MULTITENANT (CDB / PDB) -----------------------------------
+
+NAME         CDB  OPEN_MODE    LOG_MODE
+------------ ---- ------------ -------------
+XE           YES  READ WRITE   ARCHIVELOG
+
+1 row selected.
+
+
+ CON_ID NAME         OPEN_MODE    RESTRICTED
+------- ------------ ------------ ----------
+      3 XEPDB1       READ WRITE   NO
+
+1 row selected.
+
+
+--- 3. OPCIONES DE SEGURIDAD (V$OPTION) ---------------------------------------
+
+OPCION                              VALOR
+----------------------------------- ------------
+Advanced Security                   NO LISTADA
+Transparent Data Encryption         TRUE
+Unified Auditing                    FALSE
+Fine-grained access control         TRUE
+Oracle Label Security               FALSE
+Oracle Database Vault               FALSE
+
+6 rows selected.
+
+
+--- 4. WALLET TDE Y CIFRADO EN REPOSO -----------------------------------------
+
+WRL_TYPE WRL_PARAMETER                                 STATUS               WALLET_TYPE  KEYSTORE FULLY_BAC  CON_ID
+-------- --------------------------------------------- -------------------- ------------ -------- --------- -------
+FILE     (nulo)                                        NOT_AVAILABLE        UNKNOWN      UNITED   UNDEFINED       3
+
+1 row selected.
+
+
+PARAMETRO            VALOR                                                        MODIFICABL MODIFICABL
+-------------------- ------------------------------------------------------------ ---------- ----------
+tde_configuration    (sin valor)                                                  FALSE      IMMEDIATE
+wallet_root          (sin valor)                                                  FALSE      FALSE
+
+2 rows selected.
+
+
+TABLESPACE_NAME      ENCRYPTED
+-------------------- ---------
+SYSAUX               NO
+SYSTEM               NO
+TEMP                 NO
+TS_LAB               NO
+UNDOTBS1             NO
+USERS                NO
+
+6 rows selected.
+
+
+--- 5. PAQUETES DBMS_REDACT Y DBMS_RLS ----------------------------------------
+
+PAQUETE         OBJECT_TYPE     STATUS
+--------------- --------------- ------------
+DBMS_REDACT     PACKAGE         VALID
+DBMS_REDACT     PACKAGE BODY    VALID
+DBMS_RLS        PACKAGE         VALID
+DBMS_RLS        PACKAGE BODY    VALID
+
+4 rows selected.
+
+
+--- 6. POLÍTICAS DE AUDITORÍA UNIFICADA HABILITADAS ---------------------------
+
+POLICY_NAME                         ENABLED_OPTION  ENTITY_NAME          ENTITY_T SUCCESS FAILURE
+----------------------------------- --------------- -------------------- -------- ------- -------
+ORA_LOGON_FAILURES                  BY USER         ALL USERS            USER     NO      YES
+ORA_SECURECONFIG                    BY USER         ALL USERS            USER     YES     YES
+
+2 rows selected.
+
+
+--- 7. CIFRADO DE RED DE LA SESIÓN ACTUAL -------------------------------------
+
+NETWORK_SERVICE_BANNER                                                                          AUTHENTICATI
+----------------------------------------------------------------------------------------------- ------------
+Authentication service for 64-bit Windows: Version 21.0.1.0.0 - Production                      INTERNAL
+Crypto-checksumming service for 64-bit Windows: Version 21.0.1.0.0 - Production                 INTERNAL
+Encryption service for 64-bit Windows: Version 21.0.1.0.0 - Production                          INTERNAL
+NTS Authentication service adapter for 64-bit Windows: Version 2.0.0.0.0 - Production           INTERNAL
+Oracle Bequeath NT Protocol Adapter for 64-bit Windows: Version 21.0.0.0.0 - Production         INTERNAL
+
+5 rows selected.
+
+
+--- 8. RESUMEN DE DISPONIBILIDAD ----------------------------------------------
+
+FUNCION                                      DISPONIBLE       EVIDENCIA
+-------------------------------------------- ---------------- ------------------------------------------------------------
+Cifrado en reposo (TDE)                      SI               V$OPTION Advanced Security / Transparent Data Encryption
+Wallet TDE abierto en este contenedor        NO               V$ENCRYPTION_WALLET.STATUS = NOT_AVAILABLE
+Data Redaction (DBMS_REDACT)                 SI               Paquete SYS.DBMS_REDACT en estado VALID
+Virtual Private Database (DBMS_RLS)          SI               SYS.DBMS_RLS VALID y V$OPTION Fine-grained access control
+Oracle Label Security                        NO               V$OPTION Oracle Label Security
+Auditoria unificada pura                     NO (modo mixto)  V$OPTION Unified Auditing (FALSE = modo mixto, igual se
+                                                              usan politicas)
+
+Politicas de auditoria unificada activas     SI               2 politica(s) en AUDIT_UNIFIED_ENABLED_POLICIES
+Cifrado de red en esta sesion                NO               Sin adaptador de cifrado activo (protocolo: beq)
+Integridad de red (checksum) en esta sesion  NO               Sin adaptador de checksum activo
+
+9 rows selected.
+
+
+=== FIN DE LA VERIFICACIÓN ===================================================
