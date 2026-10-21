@@ -126,6 +126,46 @@ bash sql/02_verificacion/ejecutar_todo.sh
 
 El script imprime al final todas las líneas `RESULTADO PR-XX`. El resumen consolidado de las 26 pruebas está en [`evidencias/resumen_pruebas.md`](evidencias/resumen_pruebas.md), con los hallazgos y desviaciones. Scripts de apoyo: `v12_expdp.sh` (exportación cifrada), `v16_busqueda_texto.sh` (búsqueda en datafiles) y los `*.rman` de respaldos obsoletos y validación de restauración.
 
+## Artefacto interactivo (`artefacto/`)
+
+El sitio HTML de `artefacto/` presenta todo el proyecto (resumen, riesgos, tareas, mapeo ISO, matriz, batería de pruebas, scripts, remediación, uso de IA y referencias) a partir de una única fuente de datos.
+
+### Regenerar los datos
+
+La fuente oficial es `docs/informe.md`. El script `artefacto/build_data.py` (Python 3, solo biblioteca estándar) convierte sus tablas, el texto de los scripts y el registro de IA en `artefacto/data.js`. Tras cambiar el informe, basta con volver a ejecutarlo:
+
+```bash
+python artefacto/build_data.py
+```
+
+En Windows, si `python` abre la tienda de Microsoft, usar el lanzador `py`:
+
+```bash
+py artefacto/build_data.py
+```
+
+El script imprime en consola los conteos por sección. No incluye contraseñas: no lee `sql/config_local.sql`.
+
+### Verlo localmente
+
+Servir el repositorio desde su raíz y abrir `/artefacto/` (las rutas a evidencias y scripts son relativas):
+
+```bash
+python -m http.server 8765
+```
+
+Luego abrir `http://localhost:8765/artefacto/` en el navegador. También funciona abriendo `artefacto/index.html` como archivo local, aunque los enlaces a `../evidencias/` y `../sql/` requieren el servidor.
+
+### Publicarlo en GitHub Pages
+
+1. Subir el repositorio a GitHub.
+2. En el repositorio: Settings > Pages.
+3. En "Build and deployment", elegir "Deploy from a branch".
+4. Seleccionar la rama (por ejemplo `main`) y la carpeta raíz (`/root`), y guardar.
+5. El artefacto queda disponible en `https://<usuario>.github.io/<repositorio>/artefacto/`.
+
+Como todas las rutas del artefacto son relativas, funciona servido desde la raíz del repositorio sin cambios.
+
 ## Metodología PHVA
 
 El proyecto sigue el ciclo Planificar-Hacer-Verificar-Actuar (PHVA), coherente con la estructura de mejora continua de ISO/IEC 27001:2022:

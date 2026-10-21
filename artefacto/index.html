@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Marco de controles ISO/IEC 27001:2022 - Oracle 21c</title>
+  <meta name="description" content="Artefacto interactivo del marco de controles ISO/IEC 27001:2022 para la confidencialidad en la administración de bases de datos Oracle 21c.">
+  <!-- Resaltado de sintaxis (única dependencia externa, desde cdnjs). -->
+  <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+  <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" disabled>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="salto" href="#contenido">Saltar al contenido</a>
+
+  <header class="barra">
+    <button id="btn-menu" class="btn-icono" aria-label="Abrir menú" aria-expanded="false" aria-controls="nav">☰</button>
+    <span class="barra-titulo">ISO/IEC 27001:2022 · Confidencialidad en Oracle 21c</span>
+    <button id="btn-tema" class="btn-icono" aria-label="Cambiar entre modo claro y oscuro">◐</button>
+  </header>
+
+  <div class="disposicion">
+    <nav id="nav" class="nav" aria-label="Secciones del artefacto">
+      <ol id="nav-lista"></ol>
+    </nav>
+
+    <main id="contenido" class="contenido" tabindex="-1">
+      <div id="vistas"></div>
+      <footer class="pie">
+        <p>Artefacto generado a partir de <code>docs/informe.md</code>. Regenerar datos con <code>python artefacto/build_data.py</code>.</p>
+      </footer>
+    </main>
+  </div>
+
+  <!-- Datos primero, luego la aplicación. Funciona como archivo local y en GitHub Pages. -->
+  <script src="data.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/sql.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
