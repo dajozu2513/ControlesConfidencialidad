@@ -1,0 +1,48 @@
+
+================================================================================
+VERIFICACIÓN - v05_revision_derechos
+Pruebas cubiertas: PR-07
+================================================================================
+
+FECHA_HORA                   USUARIO      CONTENEDOR   SESION_IP        PROTOCOLO
+---------------------------- ------------ ------------ ---------------- ----------
+2026-10-21 15:44:24          SYS          XEPDB1       local            beq
+
+--- Inventario de cuentas (estado, último acceso, perfil, roles)
+
+USERNAME       ACCOUNT_STATUS   ULTIMO_ACCESO        PROFILE          ROLES
+-------------- ---------------- -------------------- ---------------- ----------------------------------------
+AUD_VEGA       OPEN             2026-10-21 15:40     PERFIL_CLINICA   ROL_AUDITOR
+CLINICA        LOCKED           (nunca)              DEFAULT          (ninguno)
+CLINICA_DEV    LOCKED           (nunca)              DEFAULT          (ninguno)
+DBA_OPER       OPEN             2026-10-21 15:42     PERFIL_CLINICA   DBA
+DEV_CALVO      OPEN             (nunca)              PERFIL_CLINICA   ROL_DESARROLLO
+LAB_FALLOS     OPEN             (nunca)              DEFAULT          (ninguno)
+MED_MORA       OPEN             2026-10-21 15:39     PERFIL_CLINICA   ROL_MEDICO
+MED_ROJAS      OPEN             2026-10-21 15:40     PERFIL_CLINICA   ROL_MEDICO
+PDBADMIN       OPEN             (nunca)              DEFAULT          PDB_DBA
+RECEP_SOLIS    OPEN             2026-10-21 15:44     PERFIL_CLINICA   ROL_RECEPCION
+TLD_USER       OPEN             2026-08-27 03:29     DEFAULT          CONNECT, RESOURCE, SELECT_CATALOG_ROLE
+
+--- Privilegios de sistema por cuenta no mantenida por Oracle
+
+USERNAME       PRIVILEGIOS
+-------------- --------------------------------------------------
+AUD_VEGA       (ninguno)
+CLINICA        (ninguno)
+CLINICA_DEV    (ninguno)
+DBA_OPER       UNLIMITED TABLESPACE
+DEV_CALVO      (ninguno)
+LAB_FALLOS     (ninguno)
+MED_MORA       (ninguno)
+MED_ROJAS      (ninguno)
+PDBADMIN       (ninguno)
+RECEP_SOLIS    (ninguno)
+TLD_USER       CREATE SEQUENCE, CREATE SESSION, CREATE TABLE, UNL
+               IMITED TABLESPACE
+
+
+
+RESULTADO
+----------------------------------------------------------------------
+RESULTADO PR-07: CUMPLE

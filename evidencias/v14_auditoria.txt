@@ -1,0 +1,39 @@
+
+--- PR-23: MED_ROJAS accede a CLINICA.CONSULTAS (acción a auditar)
+
+================================================================================
+VERIFICACIÓN - v14_auditoria
+Pruebas cubiertas: PR-23
+================================================================================
+
+FECHA_HORA                   USUARIO      CONTENEDOR   SESION_IP        PROTOCOLO
+---------------------------- ------------ ------------ ---------------- ----------
+2026-10-21 15:45:46          MED_ROJAS    XEPDB1       127.0.0.1        tcp
+
+FILAS_VISTAS
+------------
+          18
+
+--- Volcado de la auditoría a disco (como SYS)
+
+--- PR-23: el auditor AUD_VEGA consulta el registro del acceso de MED_ROJAS
+
+DBUSERNAME   OBJECT_NAME  ACTION_NAM CUANDO
+------------ ------------ ---------- --------------------
+MED_ROJAS    CONSULTAS    SELECT     2026-10-21 15:39:08
+MED_ROJAS    CONSULTAS    SELECT     2026-10-21 15:40:32
+MED_ROJAS    CONSULTAS    SELECT     2026-10-21 15:44:27
+MED_ROJAS    CONSULTAS    SELECT     2026-10-21 15:45:46
+
+--- Políticas de auditoría habilitadas (vista del auditor)
+
+POLICY_NAME                ENABLED_OPTION ENTITY_NAME
+-------------------------- -------------- ------------
+ORA_LOGON_FAILURES         BY USER        ALL USERS
+ORA_SECURECONFIG           BY USER        ALL USERS
+POL_CAMBIOS_PRIVILEGIOS    BY USER        ALL USERS
+POL_DATOS_SENSIBLES        BY USER        ALL USERS
+POL_EXPORTACIONES          BY USER        ALL USERS
+POL_PRIVILEGIADOS          BY USER        DBA_OPER
+
+RESULTADO PR-23: CUMPLE (4 registros del acceso de MED_ROJAS)

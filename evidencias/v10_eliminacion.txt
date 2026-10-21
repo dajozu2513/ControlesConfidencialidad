@@ -1,0 +1,29 @@
+
+================================================================================
+VERIFICACIÓN - v10_eliminacion
+Pruebas cubiertas: PR-15
+================================================================================
+
+FECHA_HORA                   USUARIO      CONTENEDOR   SESION_IP        PROTOCOLO
+---------------------------- ------------ ------------ ---------------- ----------
+2026-10-21 15:44:36          SYS          XEPDB1       local            beq
+
+--- Creación y borrado de CLINICA.TMP_BORRAR
+
+--- Objetos de CLINICA en la papelera antes de purgar
+
+OWNER      ORIGINAL_NAME        TYPE
+---------- -------------------- -------------------------
+CLINICA    TMP_BORRAR           TABLE
+
+--- Purga de la papelera
+
+
+TOTAL_PAPELERA
+--------------
+             0
+
+
+RESULTADO
+------------------------------------------------------------
+RESULTADO PR-15: CUMPLE

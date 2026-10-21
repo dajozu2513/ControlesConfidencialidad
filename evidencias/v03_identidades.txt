@@ -1,0 +1,30 @@
+
+================================================================================
+VERIFICACIÓN - v03_identidades
+Pruebas cubiertas: PR-04
+================================================================================
+
+FECHA_HORA                   USUARIO      CONTENEDOR   SESION_IP        PROTOCOLO
+---------------------------- ------------ ------------ ---------------- ----------
+2026-10-21 15:44:23          SYS          XEPDB1       local            beq
+
+--- Cuentas abiertas no mantenidas por Oracle
+
+USERNAME         ACCOUNT_STATUS   PROFILE
+---------------- ---------------- ----------------
+AUD_VEGA         OPEN             PERFIL_CLINICA
+DBA_OPER         OPEN             PERFIL_CLINICA
+DEV_CALVO        OPEN             PERFIL_CLINICA
+LAB_FALLOS       OPEN             DEFAULT
+MED_MORA         OPEN             PERFIL_CLINICA
+MED_ROJAS        OPEN             PERFIL_CLINICA
+PDBADMIN         OPEN             DEFAULT
+RECEP_SOLIS      OPEN             PERFIL_CLINICA
+TLD_USER         OPEN             DEFAULT
+
+--- Cuentas abiertas con contraseña por defecto conocida
+
+
+RESULTADO
+------------------------------------------------------------
+RESULTADO PR-04: CUMPLE

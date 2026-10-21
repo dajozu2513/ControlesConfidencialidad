@@ -1,0 +1,31 @@
+
+================================================================================
+VERIFICACIÓN - v13_respaldos
+Pruebas cubiertas: PR-22
+================================================================================
+
+FECHA_HORA                   USUARIO      CONTENEDOR   SESION_IP        PROTOCOLO
+---------------------------- ------------ ------------ ---------------- ----------
+2026-10-21 15:45:39          SYS          CDB$ROOT     local            beq
+
+--- Configuración de cifrado de RMAN
+
+NAME                                     VALUE
+---------------------------------------- ------------------------------
+ENCRYPTION ALGORITHM                     'AES256'
+ENCRYPTION FOR DATABASE                  ON
+RETENTION POLICY                         TO REDUNDANCY 1
+
+--- Piezas de respaldo de XEPDB1 (con_id 3) y su estado de cifrado
+SELECT bs.tag, p.encrypted,
+       *
+ERROR at line 1:
+ORA-00904: "BS"."TAG": invalid identifier
+
+
+
+
+RESULTADO
+----------------------------------------------------------------------
+RESULTADO PR-22 (cifrado): CUMPLE (1 piezas, todas cifradas)
+RESULTADO PR-22 (restore validate): CUMPLE

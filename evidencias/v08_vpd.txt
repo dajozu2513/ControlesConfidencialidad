@@ -1,0 +1,31 @@
+
+================================================================================
+VERIFICACIÓN - v08_vpd
+Pruebas cubiertas: PR-12
+================================================================================
+
+FECHA_HORA                   USUARIO      CONTENEDOR   SESION_IP        PROTOCOLO
+---------------------------- ------------ ------------ ---------------- ----------
+2026-10-21 15:44:27          SYS          XEPDB1       local            beq
+
+--- Política VPD sobre CLINICA.CONSULTAS
+
+OBJECT_NAME  POLICY_NAME          FUNCTION           ENABLE
+------------ -------------------- ------------------ ------
+CONSULTAS    POL_VPD_CONSULTAS    FN_VPD_CONSULTAS   YES
+
+--- Distribución real de CONSULTAS por médico (referencia)
+
+USUARIO_BD   FILAS
+------------ -----
+MED_MORA        12
+MED_ROJAS       18
+
+--- PR-12 (SYS, exento de VPD): se esperan 30 filas
+RESULTADO PR-12 (SYS): CUMPLE (30 filas)
+
+--- PR-12 (MED_ROJAS, por TCP): se esperan 18 filas
+RESULTADO PR-12 (MED_ROJAS): CUMPLE (18 filas)
+
+--- PR-12 (MED_MORA, por TCP): se esperan 12 filas
+RESULTADO PR-12 (MED_MORA): CUMPLE (12 filas)

@@ -1,0 +1,34 @@
+================================================================================
+ VERIFICACIÓN - v12_expdp (PR-21)
+ Marco ISO/IEC 27001:2022 - Confidencialidad en Oracle 21c
+================================================================================
+Fecha y hora   : 2026-10-21 15:44:52 -0600
+DATA_PUMP_DIR  : C:\app\dajoz\product\21c\admin\xe\dpdump/2F4B5653DD12425A961958A7A5B3DDEC
+Esquema        : CLINICA   Dumpfile: expfuga_20261021_154452.dmp
+
+--- 1. EXPORTACIÓN CIFRADA (ENCRYPTION=ALL, ENCRYPTION_MODE=TRANSPARENT)
+  Export: Release 21.0.0.0.0 - Production on Wed Oct 21 15:44:53 2026
+  ORA-39002: invalid operation
+  ORA-00439: feature not enabled: Dump File Encryption
+
+  El cifrado de Data Pump no se completó (código 1). Se documenta como
+  desviación y se repite la exportación SIN cifrado para evidenciar la fuga.
+  Export: Release 21.0.0.0.0 - Production on Wed Oct 21 15:44:56 2026
+  ORA-39181: Only partial table data may be exported due to fine grain access control on "CLINICA"."CONSULTAS"
+  ORA-39173: Encrypted data has been stored unencrypted in dump file set.
+  Job "DBA_OPER"."SYS_EXPORT_SCHEMA_01" completed with 1 error(s) at Wed Oct 21 15:45:36 2026 elapsed 0 00:00:37
+
+--- 2. BÚSQUEDA DE UN NOMBRE REAL EN EL DUMP (grep -a -c "Solano Vargas")
+  Coincidencias: 1
+
+--- 3. AUDITORÍA DE LA EXPORTACIÓN (audit_type Datapump)
+  DBUSERNAME   ACTION_NAME      CUANDO
+  ------------ ---------------- --------------------
+  DBA_OPER     EXPORT	      2026-10-21 15:40:20
+  DBA_OPER     EXPORT	      2026-10-21 15:45:35
+
+--- 4. RESULTADO
+RESULTADO PR-21: NO CUMPLE (cifrado de Data Pump no disponible en XE; el export
+  sin cifrar expone el nombre real: 1 coincidencias). Hallazgo de fuga.
+
+--- 5. LIMPIEZA: dump y log eliminados de DATA_PUMP_DIR

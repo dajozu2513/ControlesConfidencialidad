@@ -1,0 +1,120 @@
+
+Recovery Manager: Release 21.0.0.0.0 - Production on Wed Oct 21 15:23:48 2026
+Version 21.3.0.0.0
+
+Copyright (c) 1982, 2021, Oracle and/or its affiliates.  All rights reserved.
+
+connected to target database: XE (DBID=3123199820)
+
+RMAN> ################################################################################
+2> # Script   : sql/01_setup/s09_rman_cifrado.rman
+3> # Contenedor: CDB (RMAN conectado a CDB$ROOT; respaldo solo de la PDB XEPDB1)
+4> # Fase PHVA: Hacer
+5> # Controles: ISO/IEC 27001:2022 A.8.13 (respaldo de la información),
+6> #            A.8.24 (uso de criptografía)
+7> #
+8> # Propósito:
+9> #   Configurar el cifrado de los respaldos de RMAN en modo transparente (usa
+10> #   la clave maestra del keystore TDE, abierto por AUTO_LOGIN) con AES256, y
+11> #   una política de retención por redundancia 1. Luego respaldar XEPDB1, que
+12> #   contiene el esquema CLINICA (no toda la CDB, para ahorrar espacio).
+13> #   Los respaldos van al área de recuperación (db_recovery_file_dest).
+14> #
+15> # Ejecución (Git Bash, desde la raíz del repositorio):
+16> #   export NLS_DATE_FORMAT='YYYY-MM-DD HH24:MI:SS'
+17> #   rman target / cmdfile=sql/01_setup/s09_rman_cifrado.rman log=evidencias/setup_rman.txt
+18> #   Re-ejecutable: CONFIGURE reemplaza la configuración y cada ejecución
+19> #   genera un respaldo nuevo.
+20> ################################################################################
+21> 
+22> # 1. Configuración vigente antes del cambio.
+23> SHOW ALL;
+24> 
+25> # 2. Cifrado de todos los respaldos de la base de datos con AES256.
+26> CONFIGURE ENCRYPTION FOR DATABASE ON;
+27> CONFIGURE ENCRYPTION ALGORITHM 'AES256';
+28> 
+29> # 3. Retención: basta con un respaldo completo por archivo de datos; los
+30> #    anteriores quedan obsoletos (se eliminan en la prueba PR-16).
+31> CONFIGURE RETENTION POLICY TO REDUNDANCY 1;
+32> 
+33> # 4. Respaldo de la PDB XEPDB1 (la base está en ARCHIVELOG: respaldo en línea).
+34> BACKUP PLUGGABLE DATABASE XEPDB1 TAG 'S09_XEPDB1_CIFRADO';
+35> 
+36> # 5. Configuración resultante y resumen de los respaldos de XEPDB1.
+37> SHOW ENCRYPTION FOR DATABASE;
+38> SHOW ENCRYPTION ALGORITHM;
+39> SHOW RETENTION POLICY;
+40> LIST BACKUP OF PLUGGABLE DATABASE XEPDB1 SUMMARY;
+41> 
+using target database control file instead of recovery catalog
+RMAN configuration parameters for database with db_unique_name XE are:
+CONFIGURE RETENTION POLICY TO REDUNDANCY 2;
+CONFIGURE BACKUP OPTIMIZATION OFF; # default
+CONFIGURE DEFAULT DEVICE TYPE TO DISK; # default
+CONFIGURE CONTROLFILE AUTOBACKUP ON;
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE DISK TO '%F'; # default
+CONFIGURE DEVICE TYPE DISK PARALLELISM 1 BACKUP TYPE TO BACKUPSET; # default
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE MAXSETSIZE TO UNLIMITED; # default
+CONFIGURE ENCRYPTION FOR DATABASE OFF; # default
+CONFIGURE ENCRYPTION ALGORITHM 'AES128'; # default
+CONFIGURE COMPRESSION ALGORITHM 'BASIC' AS OF RELEASE 'DEFAULT' OPTIMIZE FOR LOAD TRUE ; # default
+CONFIGURE RMAN OUTPUT TO KEEP FOR 7 DAYS; # default
+CONFIGURE ARCHIVELOG DELETION POLICY TO BACKED UP 1 TIMES TO DISK;
+CONFIGURE SNAPSHOT CONTROLFILE NAME TO 'C:\APP\DAJOZ\PRODUCT\21C\DATABASE\SNCFXE.ORA'; # default
+
+new RMAN configuration parameters:
+CONFIGURE ENCRYPTION FOR DATABASE ON;
+new RMAN configuration parameters are successfully stored
+
+new RMAN configuration parameters:
+CONFIGURE ENCRYPTION ALGORITHM 'AES256';
+new RMAN configuration parameters are successfully stored
+
+old RMAN configuration parameters:
+CONFIGURE RETENTION POLICY TO REDUNDANCY 2;
+new RMAN configuration parameters:
+CONFIGURE RETENTION POLICY TO REDUNDANCY 1;
+new RMAN configuration parameters are successfully stored
+
+Starting backup at 2026-10-21 15:23:54
+allocated channel: ORA_DISK_1
+channel ORA_DISK_1: SID=628 device type=DISK
+channel ORA_DISK_1: starting full datafile backup set
+channel ORA_DISK_1: specifying datafile(s) in backup set
+input datafile file number=00010 name=C:\APP\DAJOZ\PRODUCT\21C\ORADATA\XE\XEPDB1\SYSAUX01.DBF
+input datafile file number=00009 name=C:\APP\DAJOZ\PRODUCT\21C\ORADATA\XE\XEPDB1\SYSTEM01.DBF
+input datafile file number=00011 name=C:\APP\DAJOZ\PRODUCT\21C\ORADATA\XE\XEPDB1\UNDOTBS01.DBF
+input datafile file number=00013 name=C:\APP\DAJOZ\PRODUCT\21C\ORADATA\XE\XEPDB1\TS_LAB01.DBF
+input datafile file number=00015 name=C:\APP\DAJOZ\PRODUCT\21C\ORADATA\XE\XEPDB1\CLINICA_DATA01.DBF
+input datafile file number=00012 name=C:\APP\DAJOZ\PRODUCT\21C\ORADATA\XE\XEPDB1\USERS01.DBF
+channel ORA_DISK_1: starting piece 1 at 2026-10-21 15:23:54
+channel ORA_DISK_1: finished piece 1 at 2026-10-21 15:24:01
+piece handle=C:\APP\DAJOZ\PRODUCT\21C\FAST_RECOVERY_AREA\XE\2F4B5653DD12425A961958A7A5B3DDEC\BACKUPSET\2026_10_21\O1_MF_NNNDF_S09_XEPDB1_CIFRADO_OFLCCC0X_.BKP tag=S09_XEPDB1_CIFRADO comment=NONE
+channel ORA_DISK_1: backup set complete, elapsed time: 00:00:07
+Finished backup at 2026-10-21 15:24:01
+
+Starting Control File and SPFILE Autobackup at 2026-10-21 15:24:01
+piece handle=C:\APP\DAJOZ\PRODUCT\21C\FAST_RECOVERY_AREA\XE\AUTOBACKUP\2026_10_21\O1_MF_S_1247239442_OFLCCL3R_.BKP comment=NONE
+Finished Control File and SPFILE Autobackup at 2026-10-21 15:24:03
+
+RMAN configuration parameters for database with db_unique_name XE are:
+CONFIGURE ENCRYPTION FOR DATABASE ON;
+
+RMAN configuration parameters for database with db_unique_name XE are:
+CONFIGURE ENCRYPTION ALGORITHM 'AES256';
+
+RMAN configuration parameters for database with db_unique_name XE are:
+CONFIGURE RETENTION POLICY TO REDUNDANCY 1;
+
+
+List of Backups
+===============
+Key     TY LV S Device Type Completion Time     #Pieces #Copies Compressed Tag
+------- -- -- - ----------- ------------------- ------- ------- ---------- ---
+3       B  F  A DISK        2026-10-14 11:25:58 1       1       NO         TAG20261014T112554
+10      B  F  A DISK        2026-10-21 15:23:58 1       1       NO         S09_XEPDB1_CIFRADO
+
+Recovery Manager complete.

@@ -1,0 +1,58 @@
+
+--- PR-17: RECEP_SOLIS consulta cédula y teléfono (deben verse redactados)
+
+================================================================================
+VERIFICACIÓN - v11_enmascaramiento
+Pruebas cubiertas: PR-17,PR-18,PR-19
+================================================================================
+
+FECHA_HORA                   USUARIO      CONTENEDOR   SESION_IP        PROTOCOLO
+---------------------------- ------------ ------------ ---------------- ----------
+2026-10-21 15:44:50          RECEP_SOLIS  XEPDB1       127.0.0.1        tcp
+
+CEDULA       TELEFONO
+------------ ----------
+X-XXXX-0781  XXXX-4410
+X-XXXX-0245  XXXX-1198
+X-XXXX-0533  XXXX-7781
+X-XXXX-0912  XXXX-2256
+X-XXXX-0664  XXXX-3348
+RESULTADO PR-17: CUMPLE (5/5 filas redactadas)
+
+--- PR-18: políticas y columnas de Data Redaction
+SELECT c.object_name, c.policy_name, c.column_name, c.function_type
+                      *
+ERROR at line 1:
+ORA-00904: "C"."POLICY_NAME": invalid identifier
+
+
+
+--- PR-18: titulares de EXEMPT REDACTION POLICY (directo y por rol)
+
+GRANTEE                VIA
+---------------------- ----------------------
+DATAPUMP_EXP_FULL_DATA VIA EXP_FULL_DATABASE
+BASE
+
+DATAPUMP_IMP_FULL_DATA VIA EXP_FULL_DATABASE
+BASE
+
+DBA                    VIA EXP_FULL_DATABASE
+EXP_FULL_DATABASE      DIRECTO
+SYS                    VIA EXP_FULL_DATABASE
+
+
+RESULTADO
+------------------------------------------------------------
+RESULTADO PR-18: CUMPLE
+
+--- PR-19: cruce de cédulas entre el clon y el origen (debe ser 0)
+
+COINCIDENCIAS
+-------------
+            0
+
+
+RESULTADO
+------------------------------------------------------------
+RESULTADO PR-19: CUMPLE

@@ -1,0 +1,74 @@
+
+================================================================================
+VERIFICACIÓN - v09_autenticacion_segura
+Pruebas cubiertas: PR-13,PR-14
+================================================================================
+
+FECHA_HORA                   USUARIO      CONTENEDOR   SESION_IP        PROTOCOLO
+---------------------------- ------------ ------------ ---------------- ----------
+2026-10-21 15:44:28          SYS          XEPDB1       local            beq
+
+--- PR-13: 6 intentos de conexión de MED_MORA con contraseña errónea
+ERROR:
+ORA-01017: invalid username/password; logon denied
+
+
+Warning: You are no longer connected to ORACLE.
+ERROR:
+ORA-01017: invalid username/password; logon denied
+
+
+ERROR:
+ORA-01017: invalid username/password; logon denied
+
+
+ERROR:
+ORA-01017: invalid username/password; logon denied
+
+
+ERROR:
+ORA-01017: invalid username/password; logon denied
+
+
+ERROR:
+ORA-28000: The account is locked.
+
+
+
+--- PR-13: estado de la cuenta MED_MORA tras los intentos
+
+USERNAME     ACCOUNT_STATUS
+------------ ----------------
+MED_MORA     LOCKED(TIMED)
+
+RESULTADO
+------------------------------------------------------------
+RESULTADO PR-13: CUMPLE (LOCKED(TIMED))
+
+--- PR-14: registro de los intentos fallidos (return_code 1017)
+
+INTENTOS_FALLIDOS
+-----------------
+               10
+
+--- PR-14: verificadores de contraseña de los usuarios de prueba (solo 12C)
+
+USERNAME       PASSWORD_VERSIONS
+-------------- ------------------
+AUD_VEGA       12C
+DBA_OPER       12C
+DEV_CALVO      12C
+MED_MORA       12C
+MED_ROJAS      12C
+RECEP_SOLIS    12C
+
+
+RESULTADO
+------------------------------------------------------------
+RESULTADO PR-14: CUMPLE
+
+--- Limpieza: desbloqueo de MED_MORA
+
+USERNAME       ACCOUNT_STATUS
+-------------- ----------------
+MED_MORA       OPEN

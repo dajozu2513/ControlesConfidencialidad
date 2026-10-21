@@ -1,0 +1,48 @@
+
+================================================================================
+VERIFICACIÓN - v02_control_acceso
+Pruebas cubiertas: PR-02,PR-03
+================================================================================
+
+FECHA_HORA                   USUARIO      CONTENEDOR   SESION_IP        PROTOCOLO
+---------------------------- ------------ ------------ ---------------- ----------
+2026-10-21 15:44:21          SYS          XEPDB1       local            beq
+
+--- PR-02: privilegios sobre objetos de CLINICA (deben ser solo a roles)
+
+GRANTEE          TABLE_NAME   PRIVILEGE    TIPO
+---------------- ------------ ------------ ------------
+ROL_MEDICO       CONSULTAS    INSERT       ROL
+ROL_MEDICO       CONSULTAS    SELECT       ROL
+ROL_MEDICO       CONSULTAS    UPDATE       ROL
+ROL_MEDICO       MEDICOS      SELECT       ROL
+ROL_MEDICO       PACIENTES    SELECT       ROL
+ROL_RECEPCION    PACIENTES    INSERT       ROL
+ROL_RECEPCION    PACIENTES    SELECT       ROL
+ROL_RECEPCION    PACIENTES    UPDATE       ROL
+
+--- PR-02: conteo de privilegios indebidos (PUBLIC o usuario directo)
+
+RESULTADO
+------------------------------------------------------------
+RESULTADO PR-02: CUMPLE
+
+--- PR-03: RECEP_SOLIS intenta leer CLINICA.CONSULTAS (se espera ORA-00942)
+
+================================================================================
+VERIFICACIÓN - v02_control_acceso(PR-03)
+Pruebas cubiertas: PR-03
+================================================================================
+
+FECHA_HORA                   USUARIO      CONTENEDOR   SESION_IP        PROTOCOLO
+---------------------------- ------------ ------------ ---------------- ----------
+2026-10-21 15:44:22          RECEP_SOLIS  XEPDB1       127.0.0.1        tcp
+Intento directo (evidencia del error):
+SELECT COUNT(*) FROM clinica.consultas
+                             *
+ERROR at line 1:
+ORA-00942: table or view does not exist
+
+
+Veredicto capturando el código ORA:
+RESULTADO PR-03: CUMPLE (ORA-00942, tabla no accesible)

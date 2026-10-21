@@ -1,0 +1,40 @@
+################################################################################
+# Script   : sql/01_setup/s09_rman_cifrado.rman
+# Contenedor: CDB (RMAN conectado a CDB$ROOT; respaldo solo de la PDB XEPDB1)
+# Fase PHVA: Hacer
+# Controles: ISO/IEC 27001:2022 A.8.13 (respaldo de la información),
+#            A.8.24 (uso de criptografía)
+#
+# Propósito:
+#   Configurar el cifrado de los respaldos de RMAN en modo transparente (usa
+#   la clave maestra del keystore TDE, abierto por AUTO_LOGIN) con AES256, y
+#   una política de retención por redundancia 1. Luego respaldar XEPDB1, que
+#   contiene el esquema CLINICA (no toda la CDB, para ahorrar espacio).
+#   Los respaldos van al área de recuperación (db_recovery_file_dest).
+#
+# Ejecución (Git Bash, desde la raíz del repositorio):
+#   export NLS_DATE_FORMAT='YYYY-MM-DD HH24:MI:SS'
+#   rman target / cmdfile=sql/01_setup/s09_rman_cifrado.rman log=evidencias/setup_rman.txt
+#   Re-ejecutable: CONFIGURE reemplaza la configuración y cada ejecución
+#   genera un respaldo nuevo.
+################################################################################
+
+# 1. Configuración vigente antes del cambio.
+SHOW ALL;
+
+# 2. Cifrado de todos los respaldos de la base de datos con AES256.
+CONFIGURE ENCRYPTION FOR DATABASE ON;
+CONFIGURE ENCRYPTION ALGORITHM 'AES256';
+
+# 3. Retención: basta con un respaldo completo por archivo de datos; los
+#    anteriores quedan obsoletos (se eliminan en la prueba PR-16).
+CONFIGURE RETENTION POLICY TO REDUNDANCY 1;
+
+# 4. Respaldo de la PDB XEPDB1 (la base está en ARCHIVELOG: respaldo en línea).
+BACKUP PLUGGABLE DATABASE XEPDB1 TAG 'S09_XEPDB1_CIFRADO';
+
+# 5. Configuración resultante y resumen de los respaldos de XEPDB1.
+SHOW ENCRYPTION FOR DATABASE;
+SHOW ENCRYPTION ALGORITHM;
+SHOW RETENTION POLICY;
+LIST BACKUP OF PLUGGABLE DATABASE XEPDB1 SUMMARY;

@@ -106,6 +106,26 @@ printf '@sql/01_setup/s02_esquema_clinica.sql\nexit\n' | sqlplus -S -L "/ as sys
 
 Todos los scripts son re-ejecutables y se detienen ante el primer error (`WHENEVER SQLERROR EXIT`). Dependencias al re-ejecutar: s02 recrea el esquema, por lo que después deben repetirse s03 a s07; s03 recrea usuarios y roles, por lo que después deben repetirse s06 y s07.
 
+Pasos adicionales de la fase 5B (red, AUTO_LOGIN y respaldos cifrados):
+
+| Script | Tipo | Qué hace | Evidencia |
+|---|---|---|---|
+| `s08_red.sh <hostname> <ipv4>` + `s08_red.md` | bash | Cifrado e integridad de red obligatorios (AES256/SHA256) y nodos invitados; requiere reinicio del listener | `setup_s08_red.txt` |
+| `prueba_autologin.sql` | SQL | Reinicia la instancia y comprueba que el keystore AUTO_LOGIN abre solo | `setup_autologin.txt` |
+| `s09_rman_cifrado.rman` | RMAN | Cifrado de respaldos AES256 y respaldo de XEPDB1 | `setup_rman.txt` |
+
+## Verificación de los controles (`sql/02_verificacion`)
+
+Diecisiete scripts (v01 a v17) prueban los controles y generan evidencias `evidencias/vNN_*.txt`. Cada uno sobrescribe su evidencia, lleva un encabezado con fecha, contenedor, usuario y las pruebas que cubre, y emite por cada prueba una línea `RESULTADO PR-XX: CUMPLE | NO CUMPLE`. Las conexiones de los usuarios de prueba son por TCP (`usuario/clave@//localhost:1521/XEPDB1`).
+
+Ejecución completa (orquesta SQL, RMAN y los scripts de shell de apoyo):
+
+```bash
+bash sql/02_verificacion/ejecutar_todo.sh
+```
+
+El script imprime al final todas las líneas `RESULTADO PR-XX`. El resumen consolidado de las 26 pruebas está en [`evidencias/resumen_pruebas.md`](evidencias/resumen_pruebas.md), con los hallazgos y desviaciones. Scripts de apoyo: `v12_expdp.sh` (exportación cifrada), `v16_busqueda_texto.sh` (búsqueda en datafiles) y los `*.rman` de respaldos obsoletos y validación de restauración.
+
 ## Metodología PHVA
 
 El proyecto sigue el ciclo Planificar-Hacer-Verificar-Actuar (PHVA), coherente con la estructura de mejora continua de ISO/IEC 27001:2022:

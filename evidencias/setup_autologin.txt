@@ -1,0 +1,92 @@
+
+Session altered.
+
+
+================================================================================
+EVIDENCIA DE CONFIGURACIÓN - prueba_autologin
+Marco ISO/IEC 27001:2022 - Confidencialidad en Oracle 21c
+================================================================================
+
+FECHA_HORA                   USUARIO    CONTENEDOR   CON_ID INSTANCIA  AUTENTICACION
+---------------------------- ---------- ------------ ------ ---------- -------------
+2026-10-21 15:22:58 -06:00   SYS        CDB$ROOT     1      xe         OS
+
+1 row selected.
+
+
+--- 1. ESTADO ANTES DEL REINICIO
+
+ CON_ID WRL_PARAMETER                                 STATUS               WALLET_TYPE  KEYSTORE
+------- --------------------------------------------- -------------------- ------------ --------
+      1 C:\APP\DAJOZ\PRODUCT\21C\ADMIN\XE\WALLET\tde\ OPEN                 PASSWORD     NONE
+      2                                               OPEN                 PASSWORD     UNITED
+      3                                               OPEN                 PASSWORD     UNITED
+
+3 rows selected.
+
+
+--- 2. REINICIO (SHUTDOWN IMMEDIATE / STARTUP)
+Database closed.
+Database dismounted.
+ORACLE instance shut down.
+ORACLE instance started.
+
+Total System Global Area 1610609432 bytes
+Fixed Size                  9855768 bytes
+Variable Size             905969664 bytes
+Database Buffers          687865856 bytes
+Redo Buffers                6918144 bytes
+Database mounted.
+Database opened.
+
+--- 3. ESTADO DESPUÉS DEL REINICIO EN CDB$ROOT
+
+ CON_ID WRL_PARAMETER                                 STATUS               WALLET_TYPE  KEYSTORE
+------- --------------------------------------------- -------------------- ------------ --------
+      1 C:\APP\DAJOZ\PRODUCT\21C\ADMIN\XE\WALLET\tde\ OPEN                 AUTOLOGIN    NONE
+      2                                               OPEN                 AUTOLOGIN    UNITED
+      3                                               OPEN                 AUTOLOGIN    UNITED
+
+3 rows selected.
+
+
+ CON_ID NAME       OPEN_MODE
+------- ---------- ----------
+      2 PDB$SEED   READ ONLY
+      3 XEPDB1     READ WRITE
+
+2 rows selected.
+
+
+RESULTADO
+----------------------------------------------------------------------
+RESULTADO AUTO_LOGIN CDB$ROOT: CUMPLE
+
+1 row selected.
+
+
+--- 4. ESTADO DESPUÉS DEL REINICIO EN XEPDB1
+
+Session altered.
+
+
+ CON_ID STATUS               WALLET_TYPE  KEYSTORE
+------- -------------------- ------------ --------
+      3 OPEN                 AUTOLOGIN    UNITED
+
+1 row selected.
+
+
+FILAS_CONSULTAS_CIFRADAS
+------------------------
+                      30
+
+1 row selected.
+
+
+RESULTADO
+----------------------------------------------------------------------
+RESULTADO AUTO_LOGIN XEPDB1: CUMPLE
+
+1 row selected.
+

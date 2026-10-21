@@ -1,0 +1,53 @@
+
+================================================================================
+VERIFICACIÓN - v16_cifrado_tde
+Pruebas cubiertas: PR-26
+================================================================================
+
+FECHA_HORA                   USUARIO      CONTENEDOR   SESION_IP        PROTOCOLO
+---------------------------- ------------ ------------ ---------------- ----------
+2026-10-21 15:45:48          SYS          XEPDB1       local            beq
+
+--- Estado del keystore en XEPDB1
+
+    CON_ID STATUS       WALLET_TYPE
+---------- ------------ ------------
+         3 OPEN         AUTOLOGIN
+
+--- Tablespaces cifrados (v$encrypted_tablespaces)
+
+NOMBRE           ENCRYPTIONAL STATUS
+---------------- ------------ ----------
+CLINICA_DATA     AES256       NORMAL
+
+--- Marca de cifrado en dba_tablespaces
+
+TABLESPACE_NAME  ENCRYPTED
+---------------- ---------
+CLINICA_DATA     YES
+SYSAUX           NO
+SYSTEM           NO
+TEMP             NO
+TS_LAB           NO
+UNDOTBS1         NO
+USERS            NO
+
+
+RESULTADO
+----------------------------------------------------------------------
+RESULTADO PR-26 (vistas): CUMPLE (CLINICA_DATA cifrado AES256)
+
+--- Preparación de la prueba de texto plano (tablespace de control sin cifrar)
+Tablespace de control TS_CONTROL_PLANO creado (se elimina en v16_busqueda_texto.sh).
+
+--- PRUEBA DE TEXTO PLANO EN DISCO (PR-26)
+Nombre buscado        : Solano Vargas
+Datafile CLINICA_DATA : C:\APP\DAJOZ\PRODUCT\21C\ORADATA\XE\XEPDB1\CLINICA_DATA01.DBF (archivo ORA-00904: "FILE#": invalid identifier)
+Datafile control plano: C:\APP\DAJOZ\PRODUCT\21C\ORADATA\XE\XEPDB1\TS_CONTROL_PLANO01.DBF (archivo ORA-00904: "FILE#": invalid identifier)
+
+Coincidencias en CLINICA_DATA (cifrado) : 0 (lectura directa)
+Coincidencias en TS_CONTROL_PLANO (plano): 1 (lectura directa)
+
+RESULTADO PR-26: CUMPLE (datos cifrados ilegibles en disco; control en claro legible)
+
+--- LIMPIEZA: TS_CONTROL_PLANO eliminado

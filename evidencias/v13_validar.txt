@@ -1,0 +1,35 @@
+
+Recovery Manager: Release 21.0.0.0.0 - Production on Wed Oct 21 15:45:39 2026
+Version 21.3.0.0.0
+
+Copyright (c) 1982, 2021, Oracle and/or its affiliates.  All rights reserved.
+
+connected to target database: XE (DBID=3123199820)
+
+RMAN> ################################################################################
+2> # Script   : sql/02_verificacion/v13_validar.rman
+3> # Prueba   : PR-22 (parte restore validate)
+4> # Control  : ISO/IEC 27001:2022 A.8.13 (respaldo)
+5> #
+6> # Valida que XEPDB1 se puede restaurar a partir de los respaldos cifrados,
+7> # sin modificar la base (VALIDATE no restaura). El keystore AUTO_LOGIN debe
+8> # estar abierto para descifrar las piezas.
+9> #
+10> # Ejecución: rman target / cmdfile=sql/02_verificacion/v13_validar.rman
+11> #            log=evidencias/v13_validar.txt
+12> ################################################################################
+13> RESTORE PLUGGABLE DATABASE XEPDB1 VALIDATE;
+14> 
+Starting restore at 21-OCT-26
+using target database control file instead of recovery catalog
+allocated channel: ORA_DISK_1
+channel ORA_DISK_1: SID=383 device type=DISK
+
+channel ORA_DISK_1: starting validation of datafile backup set
+channel ORA_DISK_1: reading from backup piece C:\APP\DAJOZ\PRODUCT\21C\FAST_RECOVERY_AREA\XE\2F4B5653DD12425A961958A7A5B3DDEC\BACKUPSET\2026_10_21\O1_MF_NNNDF_V10_XEPDB1_SEGUNDO_OFLDL8X0_.BKP
+channel ORA_DISK_1: piece handle=C:\APP\DAJOZ\PRODUCT\21C\FAST_RECOVERY_AREA\XE\2F4B5653DD12425A961958A7A5B3DDEC\BACKUPSET\2026_10_21\O1_MF_NNNDF_V10_XEPDB1_SEGUNDO_OFLDL8X0_.BKP tag=V10_XEPDB1_SEGUNDO
+channel ORA_DISK_1: restored backup piece 1
+channel ORA_DISK_1: validation complete, elapsed time: 00:00:03
+Finished restore at 21-OCT-26
+
+Recovery Manager complete.

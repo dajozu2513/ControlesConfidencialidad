@@ -1,0 +1,42 @@
+
+================================================================================
+VERIFICACIÓN - v17_version
+Pruebas cubiertas: A.8.8(informativo)
+================================================================================
+
+FECHA_HORA                   USUARIO      CONTENEDOR   SESION_IP        PROTOCOLO
+---------------------------- ------------ ------------ ---------------- ----------
+2026-10-21 15:45:53          SYS          XEPDB1       local            beq
+
+--- Versión del motor
+
+BANNER_FULL
+--------------------------------------------------------------------------------
+Oracle Database 21c Express Edition Release 21.0.0.0.0 - Production
+Version 21.3.0.0.0
+
+
+--- Componentes del diccionario (dba_registry)
+
+COMP_NAME                                VERSION        STATUS
+---------------------------------------- -------------- ----------
+JServer JAVA Virtual Machine             21.0.0.0.0     VALID
+OLAP Analytic Workspace                  21.0.0.0.0     VALID
+Oracle Database Catalog Views            21.0.0.0.0     VALID
+Oracle Database Java Packages            21.0.0.0.0     VALID
+Oracle Database Packages and Types       21.0.0.0.0     VALID
+Oracle Database Vault                    21.0.0.0.0     VALID
+Oracle Label Security                    21.0.0.0.0     VALID
+Oracle Locator                           21.0.0.0.0     VALID
+Oracle Multimedia                        21.0.0.0.0     VALID
+Oracle OLAP API                          21.0.0.0.0     VALID
+Oracle Real Application Clusters         21.0.0.0.0     OPTION OFF
+Oracle Text                              21.0.0.0.0     VALID
+Oracle Workspace Manager                 21.0.0.0.0     VALID
+Oracle XDK                               21.0.0.0.0     VALID
+Oracle XML Database                      21.0.0.0.0     VALID
+Spatial                                  21.0.0.0.0     VALID
+
+--- Parches de SQL aplicados (dba_registry_sqlpatch)
+
+(Script informativo para A.8.8; no genera resultado PR.)

@@ -1,0 +1,16 @@
+################################################################################
+# Script   : sql/02_verificacion/v10_obsoletos.rman
+# Prueba   : PR-16 (eliminación de respaldos obsoletos)
+# Control  : ISO/IEC 27001:2022 A.8.10 (borrado de información), A.8.13
+#
+# Con RETENTION POLICY REDUNDANCY 1, un segundo respaldo de XEPDB1 deja al
+# primero obsoleto. DELETE NOPROMPT OBSOLETE lo elimina y REPORT OBSOLETE no
+# debe listar respaldos obsoletos (lo valida ejecutar_todo.sh).
+#
+# Ejecución: rman target / cmdfile=sql/02_verificacion/v10_obsoletos.rman
+#            log=evidencias/v10_obsoletos.txt
+################################################################################
+SHOW RETENTION POLICY;
+BACKUP PLUGGABLE DATABASE XEPDB1 TAG 'V10_XEPDB1_SEGUNDO';
+DELETE NOPROMPT OBSOLETE;
+REPORT OBSOLETE;

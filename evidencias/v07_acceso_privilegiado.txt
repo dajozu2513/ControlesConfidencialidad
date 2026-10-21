@@ -1,0 +1,33 @@
+
+================================================================================
+VERIFICACIÓN - v07_acceso_privilegiado
+Pruebas cubiertas: PR-10,PR-11
+================================================================================
+
+FECHA_HORA                   USUARIO      CONTENEDOR   SESION_IP        PROTOCOLO
+---------------------------- ------------ ------------ ---------------- ----------
+2026-10-21 15:44:26          SYS          XEPDB1       local            beq
+
+--- PR-10: beneficiarios del rol DBA
+
+GRANTEE              ADMIN_OPTION
+-------------------- ------------
+DBA_OPER             NO
+SYS                  YES
+SYSTEM               NO
+
+--- PR-10: privilegios ANY otorgados directamente a cuentas no administrativas
+
+--- PR-10: titulares de privilegios administrativos (archivo de contraseñas)
+
+USERNAME         SYSDB SYSBA SYSKM
+---------------- ----- ----- -----
+DBA_OPER         FALSE TRUE  TRUE
+
+
+RESULTADO
+----------------------------------------------------------------------
+RESULTADO PR-10: CUMPLE
+
+--- PR-11: DBA_OPER AS SYSBACKUP intenta leer CLINICA.CONSULTAS (debe fallar)
+RESULTADO PR-11: CUMPLE (ORA-1031)

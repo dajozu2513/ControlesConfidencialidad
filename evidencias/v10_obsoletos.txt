@@ -1,0 +1,73 @@
+
+Recovery Manager: Release 21.0.0.0.0 - Production on Wed Oct 21 15:44:36 2026
+Version 21.3.0.0.0
+
+Copyright (c) 1982, 2021, Oracle and/or its affiliates.  All rights reserved.
+
+connected to target database: XE (DBID=3123199820)
+
+RMAN> ################################################################################
+2> # Script   : sql/02_verificacion/v10_obsoletos.rman
+3> # Prueba   : PR-16 (eliminación de respaldos obsoletos)
+4> # Control  : ISO/IEC 27001:2022 A.8.10 (borrado de información), A.8.13
+5> #
+6> # Con RETENTION POLICY REDUNDANCY 1, un segundo respaldo de XEPDB1 deja al
+7> # primero obsoleto. DELETE NOPROMPT OBSOLETE lo elimina y REPORT OBSOLETE no
+8> # debe listar respaldos obsoletos (lo valida ejecutar_todo.sh).
+9> #
+10> # Ejecución: rman target / cmdfile=sql/02_verificacion/v10_obsoletos.rman
+11> #            log=evidencias/v10_obsoletos.txt
+12> ################################################################################
+13> SHOW RETENTION POLICY;
+14> BACKUP PLUGGABLE DATABASE XEPDB1 TAG 'V10_XEPDB1_SEGUNDO';
+15> DELETE NOPROMPT OBSOLETE;
+16> REPORT OBSOLETE;
+17> 
+using target database control file instead of recovery catalog
+RMAN configuration parameters for database with db_unique_name XE are:
+CONFIGURE RETENTION POLICY TO REDUNDANCY 1;
+
+Starting backup at 21-OCT-26
+allocated channel: ORA_DISK_1
+channel ORA_DISK_1: SID=631 device type=DISK
+channel ORA_DISK_1: starting full datafile backup set
+channel ORA_DISK_1: specifying datafile(s) in backup set
+input datafile file number=00010 name=C:\APP\DAJOZ\PRODUCT\21C\ORADATA\XE\XEPDB1\SYSAUX01.DBF
+input datafile file number=00009 name=C:\APP\DAJOZ\PRODUCT\21C\ORADATA\XE\XEPDB1\SYSTEM01.DBF
+input datafile file number=00011 name=C:\APP\DAJOZ\PRODUCT\21C\ORADATA\XE\XEPDB1\UNDOTBS01.DBF
+input datafile file number=00013 name=C:\APP\DAJOZ\PRODUCT\21C\ORADATA\XE\XEPDB1\TS_LAB01.DBF
+input datafile file number=00015 name=C:\APP\DAJOZ\PRODUCT\21C\ORADATA\XE\XEPDB1\CLINICA_DATA01.DBF
+input datafile file number=00012 name=C:\APP\DAJOZ\PRODUCT\21C\ORADATA\XE\XEPDB1\USERS01.DBF
+channel ORA_DISK_1: starting piece 1 at 21-OCT-26
+channel ORA_DISK_1: finished piece 1 at 21-OCT-26
+piece handle=C:\APP\DAJOZ\PRODUCT\21C\FAST_RECOVERY_AREA\XE\2F4B5653DD12425A961958A7A5B3DDEC\BACKUPSET\2026_10_21\O1_MF_NNNDF_V10_XEPDB1_SEGUNDO_OFLDL8X0_.BKP tag=V10_XEPDB1_SEGUNDO comment=NONE
+channel ORA_DISK_1: backup set complete, elapsed time: 00:00:07
+Finished backup at 21-OCT-26
+
+Starting Control File and SPFILE Autobackup at 21-OCT-26
+piece handle=C:\APP\DAJOZ\PRODUCT\21C\FAST_RECOVERY_AREA\XE\AUTOBACKUP\2026_10_21\O1_MF_S_1247240687_OFLDLHW1_.BKP comment=NONE
+Finished Control File and SPFILE Autobackup at 21-OCT-26
+
+RMAN retention policy will be applied to the command
+RMAN retention policy is set to redundancy 1
+using channel ORA_DISK_1
+Deleting the following obsolete backups and copies:
+Type                 Key    Completion Time    Filename/Handle
+-------------------- ------ ------------------ --------------------
+Backup Set           12     21-OCT-26         
+  Backup Piece       12     21-OCT-26          C:\APP\DAJOZ\PRODUCT\21C\FAST_RECOVERY_AREA\XE\2F4B5653DD12425A961958A7A5B3DDEC\BACKUPSET\2026_10_21\O1_MF_NNNDF_V10_XEPDB1_SEGUNDO_OFLD89KZ_.BKP
+Backup Set           13     21-OCT-26         
+  Backup Piece       13     21-OCT-26          C:\APP\DAJOZ\PRODUCT\21C\FAST_RECOVERY_AREA\XE\AUTOBACKUP\2026_10_21\O1_MF_S_1247240364_OFLD8DON_.BKP
+deleted backup piece
+backup piece handle=C:\APP\DAJOZ\PRODUCT\21C\FAST_RECOVERY_AREA\XE\2F4B5653DD12425A961958A7A5B3DDEC\BACKUPSET\2026_10_21\O1_MF_NNNDF_V10_XEPDB1_SEGUNDO_OFLD89KZ_.BKP RECID=12 STAMP=1247240361
+deleted backup piece
+backup piece handle=C:\APP\DAJOZ\PRODUCT\21C\FAST_RECOVERY_AREA\XE\AUTOBACKUP\2026_10_21\O1_MF_S_1247240364_OFLD8DON_.BKP RECID=13 STAMP=1247240364
+Deleted 2 objects
+
+
+RMAN retention policy will be applied to the command
+RMAN retention policy is set to redundancy 1
+no obsolete backups found
+
+Recovery Manager complete.
+RESULTADO PR-16: CUMPLE (no quedan respaldos obsoletos)

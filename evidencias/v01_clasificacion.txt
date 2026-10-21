@@ -1,0 +1,45 @@
+
+================================================================================
+VERIFICACIÓN - v01_clasificacion
+Pruebas cubiertas: PR-01
+================================================================================
+
+FECHA_HORA                   USUARIO      CONTENEDOR   SESION_IP        PROTOCOLO
+---------------------------- ------------ ------------ ---------------- ----------
+2026-10-21 15:44:20          SYS          XEPDB1       local            beq
+
+--- Clasificación de cada columna de CLINICA
+
+TABLA        COLUMNA            CLASE          COMENTARIO
+------------ ------------------ -------------- ----------------------------------------------------------------------
+CONSULTAS    DIAGNOSTICO        [SENSIBLE]     [SENSIBLE] Diagnóstico médico
+CONSULTAS    FECHA              [INTERNA]      [INTERNA] Fecha de la consulta
+CONSULTAS    ID                 [INTERNA]      [INTERNA] Identificador interno de la consulta
+CONSULTAS    MEDICO_ID          [INTERNA]      [INTERNA] Médico tratante
+CONSULTAS    PACIENTE_ID        [CONFIDENCIAL] [CONFIDENCIAL] Paciente atendido (vincula a la persona con la atención
+                                               )
+
+CONSULTAS    TRATAMIENTO        [SENSIBLE]     [SENSIBLE] Tratamiento indicado
+MEDICOS      ID                 [INTERNA]      [INTERNA] Identificador interno del médico
+MEDICOS      NOMBRE             [PUBLICA]      [PUBLICA] Nombre profesional del médico
+MEDICOS      USUARIO_BD         [INTERNA]      [INTERNA] Usuario de base de datos del médico (usado por la política V
+                                               PD)
+
+PACIENTES    CEDULA             [CONFIDENCIAL] [CONFIDENCIAL] Cédula de identidad (N-NNNN-NNNN)
+PACIENTES    CORREO             [CONFIDENCIAL] [CONFIDENCIAL] Correo electrónico de contacto
+PACIENTES    DIRECCION          [CONFIDENCIAL] [CONFIDENCIAL] Dirección de residencia
+PACIENTES    FECHA_NACIMIENTO   [CONFIDENCIAL] [CONFIDENCIAL] Fecha de nacimiento del paciente
+PACIENTES    ID                 [INTERNA]      [INTERNA] Identificador interno del paciente
+PACIENTES    NOMBRE             [CONFIDENCIAL] [CONFIDENCIAL] Nombre completo del paciente
+PACIENTES    TELEFONO           [CONFIDENCIAL] [CONFIDENCIAL] Teléfono de contacto (NNNN-NNNN)
+
+--- Columnas sin comentario de clasificación válido
+
+SIN_CLASIFICAR
+--------------
+             0
+
+
+RESULTADO
+------------------------------------------------------------
+RESULTADO PR-01: CUMPLE

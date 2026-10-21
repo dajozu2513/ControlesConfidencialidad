@@ -1,0 +1,37 @@
+
+================================================================================
+VERIFICACIÓN - v12_fuga_datos
+Pruebas cubiertas: PR-20
+================================================================================
+
+FECHA_HORA                   USUARIO      CONTENEDOR   SESION_IP        PROTOCOLO
+---------------------------- ------------ ------------ ---------------- ----------
+2026-10-21 15:44:51          SYS          XEPDB1       local            beq
+
+--- Beneficiarios de roles de Data Pump
+
+GRANTEE              GRANTED_ROLE
+-------------------- --------------------------------
+DBA                  DATAPUMP_EXP_FULL_DATABASE
+GSMADMIN_INTERNAL    DATAPUMP_EXP_FULL_DATABASE
+GSMUSER_ROLE         DATAPUMP_EXP_FULL_DATABASE
+SYS                  DATAPUMP_EXP_FULL_DATABASE
+DBA                  DATAPUMP_IMP_FULL_DATABASE
+GSMADMIN_INTERNAL    DATAPUMP_IMP_FULL_DATABASE
+SYS                  DATAPUMP_IMP_FULL_DATABASE
+DV_OWNER             DV_DATAPUMP_NETWORK_LINK
+
+--- Enlaces de base de datos (se excluye el interno DBMS_CLRDBLINK de Oracle)
+
+OWNER                                                                                                                            DB_LINK              HOST                 NOTA
+-------------------------------------------------------------------------------------------------------------------------------- -------------------- -------------------- ----------------------------
+PUBLIC                                                                                                                           DBMS_CLRDBLINK       ORACLR_CONNECTION_DA interno de Oracle (extproc C
+                                                                                                                                                      TA                   LR)
+
+
+--- Privilegios sobre directorios
+
+
+RESULTADO
+----------------------------------------------------------------------
+RESULTADO PR-20: CUMPLE (sin enlaces definidos por el usuario)

@@ -1,0 +1,37 @@
+
+================================================================================
+VERIFICACIÓN - v06_proteccion_registros
+Pruebas cubiertas: PR-08,PR-09
+================================================================================
+
+FECHA_HORA                   USUARIO      CONTENEDOR   SESION_IP        PROTOCOLO
+---------------------------- ------------ ------------ ---------------- ----------
+2026-10-21 15:44:24          SYS          XEPDB1       local            beq
+
+--- PR-08 (DBA_OPER): DELETE sobre AUDSYS.AUD$UNIFIED (se espera ORA-46385)
+RESULTADO PR-08 (DBA_OPER): CUMPLE (ORA-942)
+
+--- PR-08 (SYS): DELETE sobre AUDSYS.AUD$UNIFIED (se espera ORA-46385)
+RESULTADO PR-08 (SYS): CUMPLE (ORA-46385)
+
+--- PR-09: purga controlada de la auditoría unificada (conserva lo de hoy)
+
+TOTAL_ANTES
+-----------
+      13618
+Registros de hoy antes de limpiar: 13618
+
+--- PR-09: registros de hoy que permanecen y evidencia de la operación
+
+HOY_DESPUES
+-----------
+      13619
+
+EVENTO                                   CUANDO
+---------------------------------------- --------------------
+EXECUTE                                  2026-10-21 15:44
+
+
+RESULTADO
+----------------------------------------------------------------------
+RESULTADO PR-09: CUMPLE

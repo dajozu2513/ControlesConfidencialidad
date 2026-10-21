@@ -1,0 +1,38 @@
+================================================================================
+ VERIFICACIÓN - v15_red (PR-24, PR-25)
+================================================================================
+Fecha y hora: 2026-10-21 15:45:47 -0600
+
+--- Parámetros de cifrado e integridad en el sqlnet.ora del servidor
+  SQLNET.ENCRYPTION_SERVER = REQUIRED
+  SQLNET.ENCRYPTION_TYPES_SERVER = (AES256)
+  SQLNET.CRYPTO_CHECKSUM_SERVER = REQUIRED
+  SQLNET.CRYPTO_CHECKSUM_TYPES_SERVER = (SHA256)
+  TCP.VALIDNODE_CHECKING = YES
+  TCP.INVITED_NODES = (127.0.0.1, localhost, ::1, Joel-Laptop, 192.168.0.21)
+
+================================================================================
+VERIFICACIÓN - v15_red
+Pruebas cubiertas: PR-24,PR-25
+================================================================================
+
+FECHA_HORA                   USUARIO      CONTENEDOR   SESION_IP        PROTOCOLO
+---------------------------- ------------ ------------ ---------------- ----------
+2026-10-21 15:45:48          DBA_OPER     XEPDB1       127.0.0.1        tcp
+
+--- Adaptadores de servicio de red de la sesión TCP actual
+
+NETWORK_SERVICE_BANNER
+------------------------------------------------------------------------------------------
+AES256 Encryption service adapter for 64-bit Windows: Version 21.0.1.0.0 - Production
+Authentication service for 64-bit Windows: Version 21.0.1.0.0 - Production
+Crypto-checksumming service for 64-bit Windows: Version 21.0.1.0.0 - Production
+Encryption service for 64-bit Windows: Version 21.0.1.0.0 - Production
+NTS Authentication service adapter for 64-bit Windows: Version 2.0.0.0.0 - Production
+SHA256 Crypto-checksumming service adapter for 64-bit Windows: Version 21.0.1.0.0 - Produc
+tion
+
+Windows NT TCP/IP NT Protocol Adapter for 64-bit Windows: Version 21.0.0.0.0 - Production
+
+RESULTADO PR-24: CUMPLE (cifrado AES256)
+RESULTADO PR-25: CUMPLE (integridad SHA256)

@@ -1,0 +1,13 @@
+################################################################################
+# Script   : sql/02_verificacion/v13_validar.rman
+# Prueba   : PR-22 (parte restore validate)
+# Control  : ISO/IEC 27001:2022 A.8.13 (respaldo)
+#
+# Valida que XEPDB1 se puede restaurar a partir de los respaldos cifrados,
+# sin modificar la base (VALIDATE no restaura). El keystore AUTO_LOGIN debe
+# estar abierto para descifrar las piezas.
+#
+# Ejecución: rman target / cmdfile=sql/02_verificacion/v13_validar.rman
+#            log=evidencias/v13_validar.txt
+################################################################################
+RESTORE PLUGGABLE DATABASE XEPDB1 VALIDATE;

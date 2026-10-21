@@ -1,0 +1,42 @@
+
+================================================================================
+VERIFICACIÓN - v04_perfil_contrasenas
+Pruebas cubiertas: PR-05,PR-06
+================================================================================
+
+FECHA_HORA                   USUARIO      CONTENEDOR   SESION_IP        PROTOCOLO
+---------------------------- ------------ ------------ ---------------- ----------
+2026-10-21 15:44:23          SYS          XEPDB1       local            beq
+
+--- PR-05: límites de PERFIL_CLINICA
+
+RESOURCE_NAME              LIMIT
+-------------------------- ------------------------------
+FAILED_LOGIN_ATTEMPTS      5
+INACTIVE_ACCOUNT_TIME      90
+PASSWORD_GRACE_TIME        DEFAULT
+PASSWORD_LIFE_TIME         90
+PASSWORD_LOCK_TIME         .0416
+PASSWORD_REUSE_MAX         5
+PASSWORD_REUSE_TIME        365
+PASSWORD_ROLLOVER_TIME     DEFAULT
+PASSWORD_VERIFY_FUNCTION   ORA12C_STRONG_VERIFY_FUNCTION
+
+--- PR-05: usuarios con PERFIL_CLINICA
+
+USERNAME         PROFILE          ACCOUNT_STATUS
+---------------- ---------------- ----------------
+AUD_VEGA         PERFIL_CLINICA   OPEN
+DBA_OPER         PERFIL_CLINICA   OPEN
+DEV_CALVO        PERFIL_CLINICA   OPEN
+MED_MORA         PERFIL_CLINICA   OPEN
+MED_ROJAS        PERFIL_CLINICA   OPEN
+RECEP_SOLIS      PERFIL_CLINICA   OPEN
+
+
+RESULTADO
+----------------------------------------------------------------------
+RESULTADO PR-05: CUMPLE
+
+--- PR-06: intento de fijar una contraseña débil a MED_ROJAS (se espera ORA-28003)
+RESULTADO PR-06: CUMPLE (ORA-28003, contraseña rechazada)
