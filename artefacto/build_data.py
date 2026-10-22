@@ -326,9 +326,10 @@ def construir_prompts():
     if not os.path.isfile(REGISTRO):
         return {'columns': [], 'rows': []}
     lineas = leer(REGISTRO).splitlines()
-    # La tabla del registro empieza en la primera fila que contiene 'Fecha'.
+    # La tabla del registro empieza en la primera fila de encabezado (contiene
+    # 'Herramienta IA', tanto en el formato con 'Fecha' como en el de la sección 11).
     inicio = next((i for i, l in enumerate(lineas)
-                   if l.strip().startswith('|') and 'Fecha' in l), -1)
+                   if l.strip().startswith('|') and 'Herramienta IA' in l), -1)
     if inicio < 0:
         return {'columns': [], 'rows': []}
     bloque = []

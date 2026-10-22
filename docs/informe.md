@@ -389,6 +389,38 @@ El plan cierra los dos controles en estado Parcial, reduce el riesgo residual de
 
 Cada acción se verifica con la misma batería: al completarla se vuelve a ejecutar `ejecutar_todo.sh` y se actualiza la matriz de la sección 8, lo que inicia un nuevo ciclo PHVA.
 
+## 11. Uso ético y documentado de inteligencia artificial
+
+El proyecto se desarrolló con Claude en dos modalidades: el chat de claude.ai, para análisis, redacción y diseño, y Claude Code, para escribir y ejecutar scripts en el entorno local. La conversación fue continua, por lo que varios prompts son breves y dependen del contexto acumulado: el enunciado adjunto y los resultados de pasos previos. Se omiten los mensajes de coordinación que no aportaron contenido. El texto completo de los prompts largos está en `ia/registro-prompts.md`.
+
+| N.º | Herramienta IA | Prompt exacto utilizado | Aporte de la IA | Validación / Corrección del estudiante | Fuente verificada |
+| --- | --- | --- | --- | --- | --- |
+| IA-01 | Claude (chat) | "Debemos hacer esto, lo haremos de manera ordenada, primero quiero que analices todo el documento, con base en eso, haz un plan de trabajo, y luego iremos desarrollando las tareas de ese plan. Supongo que ciertas tareas es mejor hacerlas aqui y otras en claude code, incluye tambien eso en el plan" (con el enunciado en PDF adjunto) | Análisis del enunciado, plan de trabajo por fases y reparto entre chat y Claude Code | Pendiente | Enunciado del curso |
+| IA-02 | Claude Code | Prompt de la Fase 0 (registro, entrada 2) | Estructura del repositorio, README y script de verificación del entorno | Pendiente | Oracle Database Reference 21c |
+| IA-03 | Claude (chat) | "Si quiero que la armes aquí como documento (exportable a PDF, y que crezca hasta ser el informe final)" | Introducción, marco teórico y referencias APA 7 | Pendiente: cifras de ISO, artículos de la Ley 8968 y año de la guía de seguridad de Oracle | ISO/IEC 27001:2022 y 27002:2022; Ley 8968; NIST SP 800-207 |
+| IA-04 | Claude (chat) | Resumen de la Fase 0 pegado en el chat y elección de la opción "Clínica (Recomendado)" | Metodología, entorno, escenario de datos, riesgos R-CONF-01 a 05 y tareas T-01 a T-12 | Pendiente: calificaciones de probabilidad e impacto | `evidencias/00_entorno.txt` |
+| IA-05 | Claude (chat) | "Sigamos" | Mapeo de los 15 controles y propuesta de 2 complementarios (A8.24 y A8.8) | Pendiente | ISO/IEC 27002:2022 |
+| IA-06 | Claude (chat) | "Todas las preguntas dejemoslas para el final, hacemos un documento de preguntas y yo se las consulto al profesor, por ahora sigamos" | Lista de 15 controles observables, escala de madurez 0-4 y matriz de evaluación | Pendiente | ISO/IEC 27002:2022 |
+| IA-07 | Claude (chat) | "Ok, sigamos" | Batería de 26 pruebas y prompt de la Fase 5A | Pendiente | Oracle Security Guide 21c |
+| IA-08 | Claude Code | Prompt de la Fase 5A (registro, entrada 3) | Scripts de configuración s00 a s07 y su ejecución | Pendiente | Oracle Advanced Security Guide 21c |
+| IA-09 | Claude (chat) | Resumen de la Fase 5A pegado en el chat | Prompt de la Fase 5B | Pendiente | No aplica |
+| IA-10 | Claude Code | Prompt de la Fase 5B (registro, entrada 4) | Configuración de red y RMAN, scripts v01 a v17 y ejecución de las 26 pruebas | Pendiente | Oracle Net Services y RMAN 21c |
+| IA-11 | Claude (chat) | Resumen de la Fase 5B pegado en el chat | Resultados obtenidos, calificación de la matriz y plan de remediación | Pendiente | `evidencias/resumen_pruebas.md` |
+| IA-12 | Claude (chat) | "Sigamos" | Prompt de la Fase 8 | Pendiente | No aplica |
+| IA-13 | Claude Code | Prompt de la Fase 8 (registro, entrada 5) | Artefacto HTML interactivo y generador de datos | Pendiente | No aplica |
+| IA-14 | Claude (chat) | "Si" | Guion del video de 5 minutos | Pendiente | No aplica |
+| IA-15 | Claude (chat) | Resumen de la Fase 8 pegado en el chat | Esta sección | Pendiente | No aplica |
+
+### Declaración jurada
+
+Yo, David Joel Soto Zuñiga, declaro que todo contenido generado con IA ha sido declarado en la tabla anterior, validado contra fuentes oficiales (ISO, documentación del motor de base de datos) y que asumo responsabilidad por su veracidad. Entiendo que omitir esta declaración constituye falta grave.
+
+Firma: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+
+Cédula: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+
+Fecha: 28 de octubre de 2026
+
 ## Referencias
 
 Asamblea Legislativa de la República de Costa Rica. (2011). *Ley n.º 8968: Protección de la persona frente al tratamiento de sus datos personales*. <https://pwc.com/ia/es/servicios/Regulacion-Legal/CR-Ley-n-8968.pdf>
