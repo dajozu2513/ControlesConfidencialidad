@@ -11,7 +11,7 @@ Fuente única de datos:
 
 Salida:
   - artefacto/data.js con "const DATA = {...};" (JSON embebido), para que la
-    página funcione abierta como archivo local o servida en GitHub Pages.
+    página funcione abierta como archivo local (file://) o servida localmente.
 
 Solo biblioteca estándar de Python 3. Si cambia el informe, basta con volver a
 ejecutar este script. No incluye contraseñas: no lee sql/config_local.sql ni

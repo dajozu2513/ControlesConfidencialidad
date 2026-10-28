@@ -2,7 +2,7 @@
 const DATA = {
   "meta": {
     "titulo": "Controles ISO 27001:2022 para la Confidencialidad en Bases de Datos Oracle",
-    "curso": "Administración de Bases de Datos",
+    "curso": "David Joel Soto Zuñiga",
     "escuela": "Escuela de Informática, Universidad Nacional",
     "profesor": "Johnny Villalobos Murillo",
     "ciclo": "II Ciclo 2026",
@@ -1782,9 +1782,9 @@ const DATA = {
       {
         "n_o": "IA-01",
         "herramienta_ia": "Claude (chat)",
-        "prompt_exacto_utilizado": "Debemos hacer esto, lo haremos de manera ordenada, primero quiero que analices todo el documento, con base en eso, haz un plan de trabajo, y luego iremos desarrollando las tareas de ese plan. Supongo que ciertas tareas es mejor hacerlas aqui y otras en claude code, incluye tambien eso en el plan",
+        "prompt_exacto_utilizado": "\"Debemos hacer esto, lo haremos de manera ordenada, primero quiero que analices todo el documento, con base en eso, haz un plan de trabajo, y luego iremos desarrollando las tareas de ese plan. Supongo que ciertas tareas es mejor hacerlas aqui y otras en claude code, incluye tambien eso en el plan\". Contexto: enviado junto con el enunciado de la asignación en PDF.",
         "aporte_de_la_ia": "Análisis del enunciado, plan de trabajo por fases y reparto entre chat y Claude Code",
-        "validacion_correccion_del_estudiante": "Pendiente",
+        "validacion_correccion_del_estudiante": "Verificado por el estudiante contra el enunciado; correcto, sin cambios",
         "fuente_verificada": "Enunciado del curso"
       },
       {
@@ -1792,47 +1792,47 @@ const DATA = {
         "herramienta_ia": "Claude Code",
         "prompt_exacto_utilizado": "Proyecto universitario individual: marco de controles ISO/IEC 27001:2022 para confidencialidad en administración de bases de datos Oracle 21c. Entrega: 28 de octubre de 2026. Todo el contenido en español.\n\nTarea de esta sesión (solo preparación, no configures nada de seguridad todavía):\n\n1. Inicializa un repositorio Git con esta estructura:\niso27001-dba-confidencialidad/\nREADME.md\n.gitignore\ndocs/            (marco teórico e informe)\ndata/            (JSON: riesgos, tareas, controles, matriz, pruebas)\nsql/00_entorno/\nsql/01_setup/\nsql/02_verificacion/\nevidencias/      (salidas spool de los scripts)\nartefacto/       (sitio HTML interactivo)\nia/registro-prompts.md\n\n2. README.md: título, objetivo, estructura del repo, requisitos (Oracle 21c, SQL Developer / SQL*Plus), cómo ejecutar los scripts, metodología PHVA. Sin emojis.\n\n3. .gitignore: excluir archivos de wallet (*.p12, *.sso, ewallet*, cwallet*), credenciales y archivos .env.\n\n4. ia/registro-prompts.md: tabla con columnas Fecha | Herramienta IA | Prompt exacto | Aporte de la IA | Validación / Corrección del estudiante | Fuente verificada. Primera entrada (Claude, chat, 2026-10-21), prompt exacto:\n\"Debemos hacer esto, lo haremos de manera ordenada, primero quiero que analices todo el documento, con base en eso, haz un plan de trabajo, y luego iremos desarrollando las tareas de ese plan. Supongo que ciertas tareas es mejor hacerlas aqui y otras en claude code, incluye tambien eso en el plan\"\nAporte: análisis del enunciado y plan de trabajo por fases. Validación y fuente: dejar \"Pendiente\". Agrega también este prompt que te estoy dando como segunda entrada.\n\n5. sql/00_entorno/00_verificar_entorno.sql: script de solo lectura que haga SPOOL a evidencias/00_entorno.txt y reporte:\n- Versión y edición (v$version, v$instance), si es CDB y las PDB existentes (v$pdbs).\n- Opciones relevantes en v$option: Advanced Security, Unified Auditing, Fine-grained access control, Oracle Label Security.\n- Estado del wallet TDE (v$encryption_wallet) y parámetros wallet_root y tde_configuration.\n- Existencia de DBMS_REDACT y DBMS_RLS en dba_objects.\n- Políticas de auditoría unificada habilitadas (audit_unified_enabled_policies).\n- Cifrado de red de la sesión actual (v$session_connect_info).\nComentarios en español explicando cada bloque.\n\n6. Pregúntame los datos de conexión (no los guardes en el repo), ejecuta el script con SQL*Plus como SYSDBA contra el CDB root y luego contra la PDB, y muéstrame un resumen de qué funciones están disponibles y cuáles no.\n\n7. Haz el commit inicial.",
         "aporte_de_la_ia": "Estructura del repositorio, README y script de verificación del entorno",
-        "validacion_correccion_del_estudiante": "Pendiente",
+        "validacion_correccion_del_estudiante": "Verificado por el estudiante contra la documentación de Oracle; correcto, sin cambios",
         "fuente_verificada": "Oracle Database Reference 21c"
       },
       {
         "n_o": "IA-03",
         "herramienta_ia": "Claude (chat)",
-        "prompt_exacto_utilizado": "\"Si quiero que la armes aquí como documento (exportable a PDF, y que crezca hasta ser el informe final)\"",
+        "prompt_exacto_utilizado": "\"Si quiero que la armes aquí como documento (exportable a PDF, y que crezca hasta ser el informe final)\". Contexto: respuesta a la pregunta de si el marco teórico se redactaba como documento que evolucionaría hasta el informe o como texto para Word.",
         "aporte_de_la_ia": "Introducción, marco teórico y referencias APA 7",
-        "validacion_correccion_del_estudiante": "Pendiente: cifras de ISO, artículos de la Ley 8968 y año de la guía de seguridad de Oracle",
+        "validacion_correccion_del_estudiante": "Verificado por el estudiante: cifras de ISO, Ley 8968 y año de la guía de seguridad de Oracle; correcto, sin cambios",
         "fuente_verificada": "ISO/IEC 27001:2022 y 27002:2022; Ley 8968; NIST SP 800-207"
       },
       {
         "n_o": "IA-04",
         "herramienta_ia": "Claude (chat)",
-        "prompt_exacto_utilizado": "Resumen de la Fase 0 pegado en el chat y elección de la opción \"Clínica (Recomendado)\"",
+        "prompt_exacto_utilizado": "Salida completa de Claude Code de la Fase 0 pegada en el chat, con la versión de Oracle, las funciones de seguridad disponibles y no disponibles en XE y los ajustes de ejecución. Después, selección de la opción \"Clínica (Recomendado)\" entre tres escenarios propuestos: clínica, planilla y clientes financieros.",
         "aporte_de_la_ia": "Metodología, entorno, escenario de datos, riesgos R-CONF-01 a 05 y tareas T-01 a T-12",
-        "validacion_correccion_del_estudiante": "Pendiente: calificaciones de probabilidad e impacto",
+        "validacion_correccion_del_estudiante": "Verificado por el estudiante, incluidas las calificaciones de probabilidad e impacto; correcto, sin cambios",
         "fuente_verificada": "`evidencias/00_entorno.txt`"
       },
       {
         "n_o": "IA-05",
         "herramienta_ia": "Claude (chat)",
-        "prompt_exacto_utilizado": "\"Sigamos\"",
+        "prompt_exacto_utilizado": "\"Sigamos\". Contexto: instrucción para avanzar a la Fase 3, el mapeo de los controles del Anexo A, después de revisar los riesgos y las tareas.",
         "aporte_de_la_ia": "Mapeo de los 15 controles y propuesta de 2 complementarios (A8.24 y A8.8)",
-        "validacion_correccion_del_estudiante": "Pendiente",
+        "validacion_correccion_del_estudiante": "Verificado por el estudiante contra ISO/IEC 27002:2022; correcto, sin cambios",
         "fuente_verificada": "ISO/IEC 27002:2022"
       },
       {
         "n_o": "IA-06",
         "herramienta_ia": "Claude (chat)",
-        "prompt_exacto_utilizado": "\"Todas las preguntas dejemoslas para el final, hacemos un documento de preguntas y yo se las consulto al profesor, por ahora sigamos\"",
-        "aporte_de_la_ia": "Lista de 15 controles observables, escala de madurez 0-4 y matriz de evaluación",
-        "validacion_correccion_del_estudiante": "Pendiente",
+        "prompt_exacto_utilizado": "\"Todas las preguntas dejemoslas para el final, hacemos un documento de preguntas y yo se las consulto al profesor, por ahora sigamos\". Contexto: indicación de reunir las dudas de alcance en un documento aparte y avanzar a la Fase 4.",
+        "aporte_de_la_ia": "Lista de 15 controles observables, escala de madurez 0-4, matriz de evaluación y lista inicial de preguntas para el profesor",
+        "validacion_correccion_del_estudiante": "Verificado por el estudiante contra ISO/IEC 27002:2022; correcto, sin cambios",
         "fuente_verificada": "ISO/IEC 27002:2022"
       },
       {
         "n_o": "IA-07",
         "herramienta_ia": "Claude (chat)",
-        "prompt_exacto_utilizado": "\"Ok, sigamos\"",
+        "prompt_exacto_utilizado": "\"Ok, sigamos\". Contexto: aprobación para pasar al diseño de la batería de pruebas y del prompt de implementación.",
         "aporte_de_la_ia": "Batería de 26 pruebas y prompt de la Fase 5A",
-        "validacion_correccion_del_estudiante": "Pendiente",
+        "validacion_correccion_del_estudiante": "Verificado por el estudiante contra la documentación de Oracle; correcto, sin cambios",
         "fuente_verificada": "Oracle Security Guide 21c"
       },
       {
@@ -1840,15 +1840,15 @@ const DATA = {
         "herramienta_ia": "Claude Code",
         "prompt_exacto_utilizado": "Fase 5, parte A: implementar los controles de seguridad en Oracle 21c XE (Windows), sobre el repo iso27001-dba-confidencialidad. Todo en español, sin emojis. Usa Git Bash como en la sesión anterior (MSYS_NO_PATHCONV=1, NLS_LANG=AMERICAN_AMERICA.AL32UTF8).\n\nREGLAS GENERALES\n- Cada script en sql/01_setup/ hace SPOOL a evidencias/setup_&lt;nombre&gt;.txt, con encabezado de fecha y contenedor, y comentarios en español por bloque.\n- Scripts re-ejecutables: borra objetos previos si existen (bloques PL/SQL que ignoran ORA-00942, ORA-01918, ORA-01919, etc.).\n- Ninguna contraseña en scripts versionados. Crea sql/config_local.sql (agrégalo a .gitignore) con variables DEFINE para la contraseña del keystore y las de cada usuario. Genera contraseñas que cumplan ORA12C_STRONG_VERIFY_FUNCTION (mínimo 9 caracteres, 2 mayúsculas, 2 minúsculas, 2 dígitos y 2 caracteres especiales). Cada script hace @config_local.sql al inicio.\n- Datos 100 % ficticios.\n- Pídeme confirmación antes de reiniciar la base de datos.\n\nPASO 0. Respaldo y red\n- CREATE PFILE desde el SPFILE en un directorio fuera del repo y reporta la ruta.\n- Localiza el sqlnet.ora del servidor (usa orabasehome; 21c usa Oracle home de solo lectura). Respáldalo y agrega SQLNET.ALLOWED_LOGON_VERSION_SERVER=12a. Esto debe hacerse ANTES de crear usuarios, para que solo se generen verificadores 12C. No cambies nada más de la red todavía.\n\ns01_tde_keystore.sql (CDB$ROOT, modo unido)\n- Crea el directorio para WALLET_ROOT fuera del repo. ALTER SYSTEM SET WALLET_ROOT=... SCOPE=SPFILE; reinicio (con mi confirmación); TDE_CONFIGURATION='KEYSTORE_CONFIGURATION=FILE' SCOPE=BOTH.\n- ADMINISTER KEY MANAGEMENT: crear keystore, abrirlo CONTAINER=ALL, SET KEY ... WITH BACKUP CONTAINER=ALL, crear keystore AUTO_LOGIN para que abra al reiniciar.\n- Copia de respaldo del keystore fuera del repo y fuera de WALLET_ROOT; reporta la ruta.\n\ns02_esquema_clinica.sql (XEPDB1)\n- Tablespace CLINICA_DATA (50M, autoextend) creado con ENCRYPTION USING 'AES256' ENCRYPT. XE no permite cifrar en línea un tablespace existente.\n- Usuario CLINICA con default tablespace CLINICA_DATA.\n- Tablas: MEDICOS(id, nombre, usuario_bd); PACIENTES(id, cedula VARCHAR2(11) con formato N-NNNN-NNNN, nombre, fecha_nacimiento, telefono NNNN-NNNN, correo, direccion); CONSULTAS(id, paciente_id, medico_id, fecha, diagnostico, tratamiento), con PK y FK.\n- Datos: 2 médicos con usuario_bd MED_ROJAS y MED_MORA; 20 pacientes; 30 consultas (18 de MED_ROJAS y 12 de MED_MORA).\n- COMMENT ON COLUMN en TODAS las columnas, con prefijo de clasificación [PUBLICA], [INTERNA], [CONFIDENCIAL] o [SENSIBLE] (diagnóstico y tratamiento son SENSIBLE; cédula y contacto son CONFIDENCIAL).\n- Al final: ALTER USER CLINICA ACCOUNT LOCK.\n\ns03_usuarios_roles.sql (XEPDB1)\n- Perfil PERFIL_CLINICA: PASSWORD_VERIFY_FUNCTION ORA12C_STRONG_VERIFY_FUNCTION, PASSWORD_LIFE_TIME 90, PASSWORD_REUSE_MAX 5, PASSWORD_REUSE_TIME 365, FAILED_LOGIN_ATTEMPTS 5, PASSWORD_LOCK_TIME 1/24, INACTIVE_ACCOUNT_TIME 90.\n- Roles: ROL_MEDICO (CREATE SESSION; SELECT sobre MEDICOS, PACIENTES y CONSULTAS; INSERT y UPDATE sobre CONSULTAS); ROL_RECEPCION (CREATE SESSION; SELECT, INSERT y UPDATE sobre PACIENTES; nada sobre CONSULTAS); ROL_AUDITOR (CREATE SESSION + AUDIT_VIEWER); ROL_DESARROLLO (CREATE SESSION; SELECT sobre las tablas de CLINICA_DEV, que se otorga en s07).\n- Usuarios con PERFIL_CLINICA: MED_ROJAS y MED_MORA (ROL_MEDICO), RECEP_SOLIS (ROL_RECEPCION), AUD_VEGA (ROL_AUDITOR), DEV_CALVO (ROL_DESARROLLO), DBA_OPER (rol DBA + GRANT SYSBACKUP y SYSKM).\n- Ningún privilegio directo a usuarios sobre objetos de CLINICA, ni nada a PUBLIC.\n\ns04_vpd.sql (XEPDB1)\n- Función CLINICA.FN_VPD_CONSULTAS(p_schema, p_obj) RETURN VARCHAR2: si SESSION_USER es un médico de MEDICOS, devuelve medico_id = (su id); si es CLINICA, devuelve NULL; en cualquier otro caso devuelve '1=0'.\n- DBMS_RLS.ADD_POLICY: CLINICA.CONSULTAS, POL_VPD_CONSULTAS, statement_types SELECT,INSERT,UPDATE,DELETE, update_check TRUE.\n\ns05_redaction.sql (XEPDB1)\n- Política POL_RED_PACIENTES sobre PACIENTES, con expresión SYS_CONTEXT('SYS_SESSION_ROLES','ROL_RECEPCION')='TRUE': CEDULA con redacción parcial que deja visibles solo los últimos 4 dígitos (X-XXXX-NNNN) y TELEFONO con redacción parcial (XXXX-NNNN).\n- Política POL_RED_CONSULTAS sobre CONSULTAS, con expresión SYS_CONTEXT('SYS_SESSION_ROLES','ROL_MEDICO')='FALSE': DIAGNOSTICO y TRATAMIENTO con redacción completa (defensa en profundidad para cualquier no médico con acceso).\n\ns06_auditoria.sql (XEPDB1)\n- POL_PRIVILEGIADOS: ACTIONS ALL, aplicada BY DBA_OPER.\n- POL_DATOS_SENSIBLES: SELECT, INSERT, UPDATE y DELETE sobre CLINICA.PACIENTES y CLINICA.CONSULTAS.\n- POL_CAMBIOS_PRIVILEGIOS: GRANT, REVOKE, CREATE/ALTER/DROP USER, CREATE/ALTER/DROP ROLE, ALTER PROFILE.\n- POL_EXPORTACIONES: ACTIONS COMPONENT=DATAPUMP EXPORT.\n- Habilita todas y confirma que ORA_LOGON_FAILURES siga activa.\n\ns07_clon_dev.sql (XEPDB1, como SYS)\n- Usuario CLINICA_DEV (bloqueado) con copia de las 3 tablas mediante CTAS y enmascaramiento estático: cédulas generadas con prefijo 9 (9-NNNN-NNNN, que no existe en datos reales), nombres \"Paciente &lt;id&gt;\", teléfonos aleatorios, correos paciente&lt;id&gt;@ejemplo.test y diagnósticos tomados de un catálogo genérico ficticio.\n- GRANT SELECT sobre esas tablas a ROL_DESARROLLO.\n\nEJECUCIÓN Y CIERRE\n- Ejecuta s01 a s07 en orden. Si algo falla, detente, muéstrame el error y propón la corrección antes de seguir.\n- Al final, muéstrame un resumen: objetos creados por script, estado del keystore (v$encryption_wallet en CDB y PDB), confirmación de que CLINICA_DATA está cifrado y rutas de los respaldos (pfile, sqlnet.ora y keystore).\n- Agrega este prompt completo a ia/registro-prompts.md, con Validación y Fuente en \"Pendiente\".\n- Haz commit con un mensaje descriptivo. No hagas push.",
         "aporte_de_la_ia": "Scripts de configuración s00 a s07 y su ejecución",
-        "validacion_correccion_del_estudiante": "Pendiente",
+        "validacion_correccion_del_estudiante": "Verificado por el estudiante con la ejecución de los scripts y sus evidencias; correcto, sin cambios",
         "fuente_verificada": "Oracle Advanced Security Guide 21c"
       },
       {
         "n_o": "IA-09",
         "herramienta_ia": "Claude (chat)",
-        "prompt_exacto_utilizado": "Resumen de la Fase 5A pegado en el chat",
-        "aporte_de_la_ia": "Prompt de la Fase 5B",
-        "validacion_correccion_del_estudiante": "Pendiente",
+        "prompt_exacto_utilizado": "Salida completa de Claude Code de la Fase 5A pegada en el chat, con los objetos creados por cada script, el estado del keystore, las rutas de respaldo, los problemas corregidos y los pendientes, entre ellos el acceso de `DBA_OPER` a datos sin redacción.",
+        "aporte_de_la_ia": "Prompt de la Fase 5B e incorporación del riesgo residual de `DBA_OPER` al plan de remediación",
+        "validacion_correccion_del_estudiante": "Revisado por el estudiante; correcto, sin cambios",
         "fuente_verificada": "No aplica"
       },
       {
@@ -1856,23 +1856,23 @@ const DATA = {
         "herramienta_ia": "Claude Code",
         "prompt_exacto_utilizado": "Fase 5, parte B: red, AUTO_LOGIN, RMAN cifrado, scripts de verificación v01 a v17 y ejecución de las 26 pruebas (PR-01 a PR-26). Mismo repo, mismas reglas que la parte A: Git Bash con MSYS_NO_PATHCONV=1 y NLS_LANG=AMERICAN_AMERICA.AL32UTF8, encabezado común, @config_local.sql, sin contraseñas en archivos versionados ni en evidencias, comentarios en español, sin emojis. Pídeme confirmación antes de cada reinicio de la base o del listener.\n\nPASO 1. Red (sql/01_setup/s08_red.sh + s08_red.md)\n- Respalda de nuevo el sqlnet.ora del servidor (fuera del repo) y agrega: SQLNET.ENCRYPTION_SERVER REQUIRED, ENCRYPTION_TYPES_SERVER (AES256), CRYPTO_CHECKSUM_SERVER REQUIRED, CRYPTO_CHECKSUM_TYPES_SERVER (SHA256), TCP.VALIDNODE_CHECKING YES, TCP.INVITED_NODES con bucle local, hostname e IPv4 del equipo.\n- Verifica hostname e IP reales antes de reiniciar; reinicia el listener y comprueba XE y XEPDB1. s08_red.md documenta cada parámetro, su control (A8.20) y cómo revertirlo.\n\nPASO 2. Prueba de AUTO_LOGIN: reinicio con confirmación; v$encryption_wallet OPEN/AUTOLOGIN en CDB y PDB sin abrir nada manual; XEPDB1 en READ WRITE. Evidencia setup_autologin.txt.\n\nPASO 3. RMAN (s09_rman_cifrado.rman): ENCRYPTION FOR DATABASE ON, ALGORITHM AES256, RETENTION REDUNDANCY 1; respaldo de XEPDB1; log a setup_rman.txt. Si el cifrado falla en XE, detente y muéstrame el error.\n\nPASO 4. Scripts v01 a v17 en sql/02_verificacion/ (SPOOL que sobrescribe, encabezado con IDs de prueba, RESULTADO PR-XX con CASE, pruebas negativas con WHENEVER SQLERROR CONTINUE y código ORA, conexiones de usuarios por TCP). Cubren PR-01 a PR-26 (clasificación, control de acceso, identidades, perfil de contraseñas, revisión de derechos, protección de registros, acceso privilegiado, VPD, autenticación, eliminación segura y obsoletos RMAN, enmascaramiento, fuga de datos y expdp cifrado, respaldos y restore validate, auditoría, red, cifrado TDE con prueba de texto plano, versión). Más sql/02_verificacion/ejecutar_todo.sh.\n\nPASO 5. Ejecuta ejecutar_todo.sh; corrige scripts (no controles) ante NO CUMPLE por error de script; los fallos reales quedan como hallazgo. Genera evidencias/resumen_pruebas.md (ID, control, esperado, obtenido, CUMPLE/NO CUMPLE, evidencia). Deja el entorno limpio (MED_MORA desbloqueado, sin dumps/copias/tablespaces de control). Agrega este prompt a ia/registro-prompts.md (Validación y Fuente Pendiente), actualiza el README con 02_verificacion y haz commit (sin push). Muéstrame resumen_pruebas.md y los hallazgos.",
         "aporte_de_la_ia": "Configuración de red y RMAN, scripts v01 a v17 y ejecución de las 26 pruebas",
-        "validacion_correccion_del_estudiante": "Pendiente",
+        "validacion_correccion_del_estudiante": "Verificado por el estudiante con la ejecución de las pruebas y sus evidencias; correcto, sin cambios",
         "fuente_verificada": "Oracle Net Services y RMAN 21c"
       },
       {
         "n_o": "IA-11",
         "herramienta_ia": "Claude (chat)",
-        "prompt_exacto_utilizado": "Resumen de la Fase 5B pegado en el chat",
+        "prompt_exacto_utilizado": "Salida completa de Claude Code de la Fase 5B pegada en el chat, con los resultados de las 26 pruebas, el hallazgo PR-21 (ORA-00439), los ajustes de script y la prueba negativa del filtrado por nodo.",
         "aporte_de_la_ia": "Resultados obtenidos, calificación de la matriz y plan de remediación",
-        "validacion_correccion_del_estudiante": "Pendiente",
+        "validacion_correccion_del_estudiante": "Verificado por el estudiante contra el resumen de pruebas; correcto, sin cambios",
         "fuente_verificada": "`evidencias/resumen_pruebas.md`"
       },
       {
         "n_o": "IA-12",
         "herramienta_ia": "Claude (chat)",
-        "prompt_exacto_utilizado": "\"Sigamos\"",
+        "prompt_exacto_utilizado": "\"Sigamos\". Contexto: instrucción para avanzar a la Fase 8, el artefacto HTML interactivo.",
         "aporte_de_la_ia": "Prompt de la Fase 8",
-        "validacion_correccion_del_estudiante": "Pendiente",
+        "validacion_correccion_del_estudiante": "Revisado por el estudiante; correcto, sin cambios",
         "fuente_verificada": "No aplica"
       },
       {
@@ -1880,23 +1880,31 @@ const DATA = {
         "herramienta_ia": "Claude Code",
         "prompt_exacto_utilizado": "Fase 8: artefacto HTML interactivo del proyecto, en artefacto/ del repo iso27001-dba-confidencialidad. Todo en español neutro, sin emojis.\n\nFUENTE ÚNICA DE DATOS\n- docs/informe.md es la fuente oficial (exportado del informe). No copies contenido a mano.\n- Crea artefacto/build_data.py (Python 3, solo biblioteca estándar) que: lea docs/informe.md y convierta a JSON cada tabla de las secciones 3.1, 3.3, 3.4, 4, 5, 6.1/6.2/6.3, 7, 8.1, 8.2, 9.1, 9.2, 9.4, 10 y las Referencias; una la batería (9.2) con los resultados (9.4) por ID; lea el texto de cada script de sql/01_setup/ y sql/02_verificacion/ (.sql, .sh, .rman, .md); lea ia/registro-prompts.md; y escriba artefacto/data.js con const DATA = {...}; para que funcione como archivo local y en GitHub Pages.\n- Si cambia el informe, basta con volver a ejecutar build_data.py.\n\nPÁGINA (index.html + styles.css + app.js): HTML/CSS/JS sin frameworks; única dependencia externa highlight.js desde cdnjs. Navegación lateral fija (menú desplegable en móvil) con 12 secciones: Resumen (con indicadores calculados y diagrama PHVA), Entorno, Riesgos (tabla + mapa de calor 5x5 con texto del nivel), Tareas (al seleccionar resalta riesgos y controles), Mapeo ISO (tarjetas con filtro por tema y buscador; evidencia como código copiable), Controles observables (enlace al visor de scripts), Matriz (insignias de madurez y estado, filtros, escala visible), Batería (filtros por tipo/control/estado y enlace a evidencia ../evidencias/archivo.txt), Scripts (visor agrupado, resaltado, copiar, enlace al repo), Remediación (ordenada por plazo), Uso de IA (prompts recortados que se expanden), Referencias (APA 7 con enlaces). Modo claro y oscuro, sin scroll horizontal en móvil, foco visible, estilos de impresión, rutas relativas.\n\nVERIFICACIÓN: ejecuta build_data.py y confirma conteos (5 riesgos, 12 tareas, 17 controles, 15 observables, 17 matriz, 26 pruebas, 6 remediaciones, todos los scripts); sirve con python -m http.server desde la raíz, abre /artefacto/ y comprueba consola sin errores, filtros, enlaces y vista a 375 px; revisa que ningún dato incluya contraseñas ni config_local.sql.\n\nCIERRE: sección en el README (regenerar datos, verlo localmente, publicar en GitHub Pages); agrega este prompt a ia/registro-prompts.md (Validación y Fuente Pendiente) y haz commit sin push; muestra los conteos y cualquier tabla no convertida.",
         "aporte_de_la_ia": "Artefacto HTML interactivo y generador de datos",
-        "validacion_correccion_del_estudiante": "Pendiente",
+        "validacion_correccion_del_estudiante": "Revisado por el estudiante en el navegador; correcto, sin cambios",
         "fuente_verificada": "No aplica"
       },
       {
         "n_o": "IA-14",
         "herramienta_ia": "Claude (chat)",
-        "prompt_exacto_utilizado": "\"Si\"",
-        "aporte_de_la_ia": "Guion del video de 5 minutos",
-        "validacion_correccion_del_estudiante": "Pendiente",
+        "prompt_exacto_utilizado": "\"Si\". Contexto: aceptación de la propuesta de redactar el guion del video mientras Claude Code construía el artefacto.",
+        "aporte_de_la_ia": "Guion del video de 5 minutos (no utilizado: el profesor retiró el video de los entregables)",
+        "validacion_correccion_del_estudiante": "Revisado por el estudiante; correcto, sin cambios",
         "fuente_verificada": "No aplica"
       },
       {
         "n_o": "IA-15",
         "herramienta_ia": "Claude (chat)",
-        "prompt_exacto_utilizado": "Resumen de la Fase 8 pegado en el chat",
-        "aporte_de_la_ia": "Esta sección",
-        "validacion_correccion_del_estudiante": "Pendiente",
+        "prompt_exacto_utilizado": "Salida de Claude Code de la Fase 8 pegada en el chat, con los conteos por sección del artefacto y las verificaciones realizadas.",
+        "aporte_de_la_ia": "Sección 11, conclusiones y documento de preguntas para el profesor",
+        "validacion_correccion_del_estudiante": "Revisado por el estudiante; correcto, sin cambios",
+        "fuente_verificada": "No aplica"
+      },
+      {
+        "n_o": "IA-16",
+        "herramienta_ia": "Claude (chat)",
+        "prompt_exacto_utilizado": "\"Ya tenemos que entregar esto nada mas corrijamos mis promts [...] Hazlos que suenen mas elaborados. Insertale mi firma a la declaracion, y mi numero de cedula es [omitido]. dame el promt final para claude code tambien\". Contexto: enviado con la imagen de la firma.",
+        "aporte_de_la_ia": "Contexto de cada prompt en esta tabla, manteniendo su texto literal; inserción de firma y cédula; prompt final de cierre",
+        "validacion_correccion_del_estudiante": "Revisado por el estudiante; correcto, sin cambios",
         "fuente_verificada": "No aplica"
       }
     ]

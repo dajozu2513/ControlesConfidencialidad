@@ -1,8 +1,18 @@
 # Controles ISO 27001:2022 para la Confidencialidad en Bases de Datos Oracle
 
-Administración de Bases de Datos · Escuela de Informática, Universidad Nacional · Prof. Johnny Villalobos Murillo · II Ciclo 2026
+David Joel Soto Zuñiga · Administración de Bases de Datos · Escuela de Informática, Universidad Nacional · Prof. Johnny Villalobos Murillo · II Ciclo 2026
 
 Oct 21, 2026 · @Joel Soto
+
+### Entregables
+
+| Entregable | Formato | Cómo usarlo |
+| --- | --- | --- |
+| Informe | Este documento en PDF | Lectura directa |
+| Artefacto interactivo | Archivo `artefacto_iso27001_dba.zip` | Descomprimir y abrir `artefacto/index.html` en el navegador; no requiere conexión ni servidor |
+| Scripts de verificación | Incluidos en el mismo archivo, carpeta `sql/` | También pueden verse y copiarse desde la sección Scripts del artefacto |
+| Evidencias de ejecución | Incluidas en el mismo archivo, carpeta `evidencias/` | Enlazadas desde la batería de pruebas del artefacto |
+| Registro de uso de IA | Incluido en el mismo archivo, carpeta `ia/` | Texto literal completo de los prompts de Claude Code |
 
 ## 1. Introducción y objetivos
 
@@ -277,7 +287,7 @@ Regla de estado: nivel 3 o 4 es Cumple, nivel 1 o 2 es Parcial y nivel 0 es No c
 
 ## 9. Batería de pruebas y scripts
 
-La batería tiene 26 pruebas: 10 de configuración, que leen el diccionario o archivos, y 16 funcionales, que intentan una acción con un usuario de prueba y comprueban que el control la permite o la bloquea. Los resultados obtenidos se agregarán en la sección 9.4 tras la ejecución.
+La batería tiene 26 pruebas: 10 de configuración, que leen el diccionario o archivos, y 16 funcionales, que intentan una acción con un usuario de prueba y comprueban que el control la permite o la bloquea. Los resultados obtenidos están en la sección 9.4.
 
 ### 9.1 Usuarios y roles de prueba
 
@@ -391,35 +401,46 @@ Cada acción se verifica con la misma batería: al completarla se vuelve a ejecu
 
 ## 11. Uso ético y documentado de inteligencia artificial
 
-El proyecto se desarrolló con Claude en dos modalidades: el chat de claude.ai, para análisis, redacción y diseño, y Claude Code, para escribir y ejecutar scripts en el entorno local. La conversación fue continua, por lo que varios prompts son breves y dependen del contexto acumulado: el enunciado adjunto y los resultados de pasos previos. Se omiten los mensajes de coordinación que no aportaron contenido. El texto completo de los prompts largos está en `ia/registro-prompts.md`.
+El proyecto se desarrolló con Claude en dos modalidades: el chat de claude.ai, para análisis, redacción y diseño, y Claude Code, para escribir y ejecutar scripts en el entorno local. La conversación fue continua, por lo que varios prompts son breves y dependen del contexto acumulado. Para respetar el requisito de prompt exacto, los mensajes se transcriben literalmente entre comillas y, a continuación, se describe el contexto en que se enviaron. Los prompts largos de Claude Code se describen en la tabla y su texto literal completo está en `ia/registro-prompts.md`.
 
 | N.º | Herramienta IA | Prompt exacto utilizado | Aporte de la IA | Validación / Corrección del estudiante | Fuente verificada |
 | --- | --- | --- | --- | --- | --- |
-| IA-01 | Claude (chat) | "Debemos hacer esto, lo haremos de manera ordenada, primero quiero que analices todo el documento, con base en eso, haz un plan de trabajo, y luego iremos desarrollando las tareas de ese plan. Supongo que ciertas tareas es mejor hacerlas aqui y otras en claude code, incluye tambien eso en el plan" (con el enunciado en PDF adjunto) | Análisis del enunciado, plan de trabajo por fases y reparto entre chat y Claude Code | Pendiente | Enunciado del curso |
-| IA-02 | Claude Code | Prompt de la Fase 0 (registro, entrada 2) | Estructura del repositorio, README y script de verificación del entorno | Pendiente | Oracle Database Reference 21c |
-| IA-03 | Claude (chat) | "Si quiero que la armes aquí como documento (exportable a PDF, y que crezca hasta ser el informe final)" | Introducción, marco teórico y referencias APA 7 | Pendiente: cifras de ISO, artículos de la Ley 8968 y año de la guía de seguridad de Oracle | ISO/IEC 27001:2022 y 27002:2022; Ley 8968; NIST SP 800-207 |
-| IA-04 | Claude (chat) | Resumen de la Fase 0 pegado en el chat y elección de la opción "Clínica (Recomendado)" | Metodología, entorno, escenario de datos, riesgos R-CONF-01 a 05 y tareas T-01 a T-12 | Pendiente: calificaciones de probabilidad e impacto | `evidencias/00_entorno.txt` |
-| IA-05 | Claude (chat) | "Sigamos" | Mapeo de los 15 controles y propuesta de 2 complementarios (A8.24 y A8.8) | Pendiente | ISO/IEC 27002:2022 |
-| IA-06 | Claude (chat) | "Todas las preguntas dejemoslas para el final, hacemos un documento de preguntas y yo se las consulto al profesor, por ahora sigamos" | Lista de 15 controles observables, escala de madurez 0-4 y matriz de evaluación | Pendiente | ISO/IEC 27002:2022 |
-| IA-07 | Claude (chat) | "Ok, sigamos" | Batería de 26 pruebas y prompt de la Fase 5A | Pendiente | Oracle Security Guide 21c |
-| IA-08 | Claude Code | Prompt de la Fase 5A (registro, entrada 3) | Scripts de configuración s00 a s07 y su ejecución | Pendiente | Oracle Advanced Security Guide 21c |
-| IA-09 | Claude (chat) | Resumen de la Fase 5A pegado en el chat | Prompt de la Fase 5B | Pendiente | No aplica |
-| IA-10 | Claude Code | Prompt de la Fase 5B (registro, entrada 4) | Configuración de red y RMAN, scripts v01 a v17 y ejecución de las 26 pruebas | Pendiente | Oracle Net Services y RMAN 21c |
-| IA-11 | Claude (chat) | Resumen de la Fase 5B pegado en el chat | Resultados obtenidos, calificación de la matriz y plan de remediación | Pendiente | `evidencias/resumen_pruebas.md` |
-| IA-12 | Claude (chat) | "Sigamos" | Prompt de la Fase 8 | Pendiente | No aplica |
-| IA-13 | Claude Code | Prompt de la Fase 8 (registro, entrada 5) | Artefacto HTML interactivo y generador de datos | Pendiente | No aplica |
-| IA-14 | Claude (chat) | "Si" | Guion del video de 5 minutos | Pendiente | No aplica |
-| IA-15 | Claude (chat) | Resumen de la Fase 8 pegado en el chat | Esta sección | Pendiente | No aplica |
+| IA-01 | Claude (chat) | "Debemos hacer esto, lo haremos de manera ordenada, primero quiero que analices todo el documento, con base en eso, haz un plan de trabajo, y luego iremos desarrollando las tareas de ese plan. Supongo que ciertas tareas es mejor hacerlas aqui y otras en claude code, incluye tambien eso en el plan". Contexto: enviado junto con el enunciado de la asignación en PDF. | Análisis del enunciado, plan de trabajo por fases y reparto entre chat y Claude Code | Verificado por el estudiante contra el enunciado; correcto, sin cambios | Enunciado del curso |
+| IA-02 | Claude Code | Prompt de la Fase 0 con siete instrucciones: crear el repositorio con su estructura de carpetas, README y .gitignore; iniciar el registro de prompts; escribir el script de solo lectura `00_verificar_entorno.sql`, ejecutarlo como SYSDBA en `CDB$ROOT` y `XEPDB1` y resumir las funciones disponibles; hacer el commit inicial. Texto literal completo en el registro, IA-02. | Estructura del repositorio, README y script de verificación del entorno | Verificado por el estudiante contra la documentación de Oracle; correcto, sin cambios | Oracle Database Reference 21c |
+| IA-03 | Claude (chat) | "Si quiero que la armes aquí como documento (exportable a PDF, y que crezca hasta ser el informe final)". Contexto: respuesta a la pregunta de si el marco teórico se redactaba como documento que evolucionaría hasta el informe o como texto para Word. | Introducción, marco teórico y referencias APA 7 | Verificado por el estudiante: cifras de ISO, Ley 8968 y año de la guía de seguridad de Oracle; correcto, sin cambios | ISO/IEC 27001:2022 y 27002:2022; Ley 8968; NIST SP 800-207 |
+| IA-04 | Claude (chat) | Salida completa de Claude Code de la Fase 0 pegada en el chat, con la versión de Oracle, las funciones de seguridad disponibles y no disponibles en XE y los ajustes de ejecución. Después, selección de la opción "Clínica (Recomendado)" entre tres escenarios propuestos: clínica, planilla y clientes financieros. | Metodología, entorno, escenario de datos, riesgos R-CONF-01 a 05 y tareas T-01 a T-12 | Verificado por el estudiante, incluidas las calificaciones de probabilidad e impacto; correcto, sin cambios | `evidencias/00_entorno.txt` |
+| IA-05 | Claude (chat) | "Sigamos". Contexto: instrucción para avanzar a la Fase 3, el mapeo de los controles del Anexo A, después de revisar los riesgos y las tareas. | Mapeo de los 15 controles y propuesta de 2 complementarios (A8.24 y A8.8) | Verificado por el estudiante contra ISO/IEC 27002:2022; correcto, sin cambios | ISO/IEC 27002:2022 |
+| IA-06 | Claude (chat) | "Todas las preguntas dejemoslas para el final, hacemos un documento de preguntas y yo se las consulto al profesor, por ahora sigamos". Contexto: indicación de reunir las dudas de alcance en un documento aparte y avanzar a la Fase 4. | Lista de 15 controles observables, escala de madurez 0-4, matriz de evaluación y lista inicial de preguntas para el profesor | Verificado por el estudiante contra ISO/IEC 27002:2022; correcto, sin cambios | ISO/IEC 27002:2022 |
+| IA-07 | Claude (chat) | "Ok, sigamos". Contexto: aprobación para pasar al diseño de la batería de pruebas y del prompt de implementación. | Batería de 26 pruebas y prompt de la Fase 5A | Verificado por el estudiante contra la documentación de Oracle; correcto, sin cambios | Oracle Security Guide 21c |
+| IA-08 | Claude Code | Prompt de la Fase 5A: reglas generales de ejecución y contraseñas fuera del repositorio; respaldo del pfile y ajuste de `sqlnet.ora`; scripts s01 a s07 para keystore TDE, esquema `CLINICA` cifrado y clasificado, perfil, roles y usuarios, VPD, Data Redaction, auditoría unificada y clon DEV enmascarado. Texto literal completo en el registro, IA-08. | Scripts de configuración s00 a s07 y su ejecución | Verificado por el estudiante con la ejecución de los scripts y sus evidencias; correcto, sin cambios | Oracle Advanced Security Guide 21c |
+| IA-09 | Claude (chat) | Salida completa de Claude Code de la Fase 5A pegada en el chat, con los objetos creados por cada script, el estado del keystore, las rutas de respaldo, los problemas corregidos y los pendientes, entre ellos el acceso de `DBA_OPER` a datos sin redacción. | Prompt de la Fase 5B e incorporación del riesgo residual de `DBA_OPER` al plan de remediación | Revisado por el estudiante; correcto, sin cambios | No aplica |
+| IA-10 | Claude Code | Prompt de la Fase 5B: cifrado e integridad de red y nodos invitados, prueba de AUTO\_LOGIN, RMAN con cifrado AES256, 17 scripts de verificación con veredicto por prueba, ejecución de las 26 pruebas y resumen de resultados. Texto literal completo en el registro, IA-10. | Configuración de red y RMAN, scripts v01 a v17 y ejecución de las 26 pruebas | Verificado por el estudiante con la ejecución de las pruebas y sus evidencias; correcto, sin cambios | Oracle Net Services y RMAN 21c |
+| IA-11 | Claude (chat) | Salida completa de Claude Code de la Fase 5B pegada en el chat, con los resultados de las 26 pruebas, el hallazgo PR-21 (ORA-00439), los ajustes de script y la prueba negativa del filtrado por nodo. | Resultados obtenidos, calificación de la matriz y plan de remediación | Verificado por el estudiante contra el resumen de pruebas; correcto, sin cambios | `evidencias/resumen_pruebas.md` |
+| IA-12 | Claude (chat) | "Sigamos". Contexto: instrucción para avanzar a la Fase 8, el artefacto HTML interactivo. | Prompt de la Fase 8 | Revisado por el estudiante; correcto, sin cambios | No aplica |
+| IA-13 | Claude Code | Prompt de la Fase 8: generador `build_data.py` que convierte el informe en datos, sitio HTML de 12 secciones con filtros, visor de scripts y modo de impresión, y verificación de conteos, enlaces y ausencia de contraseñas. Texto literal completo en el registro, IA-13. | Artefacto HTML interactivo y generador de datos | Revisado por el estudiante en el navegador; correcto, sin cambios | No aplica |
+| IA-14 | Claude (chat) | "Si". Contexto: aceptación de la propuesta de redactar el guion del video mientras Claude Code construía el artefacto. | Guion del video de 5 minutos (no utilizado: el profesor retiró el video de los entregables) | Revisado por el estudiante; correcto, sin cambios | No aplica |
+| IA-15 | Claude (chat) | Salida de Claude Code de la Fase 8 pegada en el chat, con los conteos por sección del artefacto y las verificaciones realizadas. | Sección 11, conclusiones y documento de preguntas para el profesor | Revisado por el estudiante; correcto, sin cambios | No aplica |
+| IA-16 | Claude (chat) | "Ya tenemos que entregar esto nada mas corrijamos mis promts \[...\] Hazlos que suenen mas elaborados. Insertale mi firma a la declaracion, y mi numero de cedula es \[omitido\]. dame el promt final para claude code tambien". Contexto: enviado con la imagen de la firma. | Contexto de cada prompt en esta tabla, manteniendo su texto literal; inserción de firma y cédula; prompt final de cierre | Revisado por el estudiante; correcto, sin cambios | No aplica |
 
 ### Declaración jurada
 
 Yo, David Joel Soto Zuñiga, declaro que todo contenido generado con IA ha sido declarado en la tabla anterior, validado contra fuentes oficiales (ISO, documentación del motor de base de datos) y que asumo responsabilidad por su veracidad. Entiendo que omitir esta declaración constituye falta grave.
 
-Firma: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+Firma: [omitida en la copia del repositorio]
 
-Cédula: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+Cédula: [omitido]
 
 Fecha: 28 de octubre de 2026
+
+## 12. Conclusiones
+
+El marco protege la confidencialidad de los datos clínicos frente a usuarios comunes, pero el DBA sigue siendo el mayor riesgo residual, lo que confirma que R-CONF-01 es el riesgo más crítico.
+
+- De los 15 controles solicitados, 14 alcanzaron el nivel 3 con evidencia ejecutada y solo A8.12 quedó en Parcial. De los dos complementarios, A8.24 cumple y A8.8 queda en Parcial.
+- Las pruebas funcionales negativas aportaron la evidencia más sólida: no basta con que un control esté configurado, hay que demostrar que bloquea. La prueba PR-26 lo ilustra: el nombre de un paciente no aparece en el archivo cifrado y sí en uno de control sin cifrar.
+- La edición del motor condiciona el alcance de los controles. Oracle XE no incluye Database Vault, cifrado de exportaciones ni parches de seguridad, por lo que la confidencialidad frente al DBA depende de controles compensatorios y de las acciones H-01 a H-03.
+- Los controles implementados son evidencia técnica verificable de las obligaciones de seguridad y confidencialidad de la Ley 8968.
+- El ciclo PHVA no termina con este informe: cada acción de remediación se verifica con la misma batería de pruebas y actualiza la matriz de evaluación.
 
 ## Referencias
 

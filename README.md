@@ -146,25 +146,15 @@ py artefacto/build_data.py
 
 El script imprime en consola los conteos por sección. No incluye contraseñas: no lee `sql/config_local.sql`.
 
-### Verlo localmente
+### Cómo verlo
 
-Servir el repositorio desde su raíz y abrir `/artefacto/` (las rutas a evidencias y scripts son relativas):
+Abrir `artefacto/index.html` directamente en el navegador (doble clic). La carga de datos y los enlaces a `../evidencias/` y `../sql/` funcionan como archivo local (`file://`), porque todas las rutas son relativas. Si no hay conexión a internet, el código se muestra sin resaltado de sintaxis, sin errores.
+
+Como alternativa, se puede servir desde la raíz del proyecto y abrir `http://localhost:8765/artefacto/`:
 
 ```bash
 python -m http.server 8765
 ```
-
-Luego abrir `http://localhost:8765/artefacto/` en el navegador. También funciona abriendo `artefacto/index.html` como archivo local, aunque los enlaces a `../evidencias/` y `../sql/` requieren el servidor.
-
-### Publicarlo en GitHub Pages
-
-1. Subir el repositorio a GitHub.
-2. En el repositorio: Settings > Pages.
-3. En "Build and deployment", elegir "Deploy from a branch".
-4. Seleccionar la rama (por ejemplo `main`) y la carpeta raíz (`/root`), y guardar.
-5. El artefacto queda disponible en `https://<usuario>.github.io/<repositorio>/artefacto/`.
-
-Como todas las rutas del artefacto son relativas, funciona servido desde la raíz del repositorio sin cambios.
 
 ## Metodología PHVA
 

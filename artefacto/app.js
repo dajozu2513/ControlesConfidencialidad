@@ -477,7 +477,7 @@
       panel.innerHTML = '';
       var cabd = el('div', 'cab');
       cabd.appendChild(el('span', 'ruta', s.ruta));
-      var repo = el('a', null, 'Ver en el repositorio'); repo.href = '../' + s.ruta; repo.target = '_blank'; repo.rel = 'noopener';
+      var repo = el('a', null, 'Abrir el archivo'); repo.href = '../' + s.ruta; repo.target = '_blank'; repo.rel = 'noopener';
       cabd.appendChild(repo);
       panel.appendChild(cabd);
       panel.appendChild(bloqueCodigo(s.contenido, s.lenguaje));
