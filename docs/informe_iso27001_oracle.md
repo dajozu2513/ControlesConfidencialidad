@@ -451,7 +451,7 @@ El proyecto se desarrolló con Claude en dos modalidades: el chat de claude.ai, 
 
 Yo, David Joel Soto Zuñiga, declaro que todo contenido generado con IA ha sido declarado en la tabla anterior, validado contra fuentes oficiales (ISO, documentación del motor de base de datos) y que asumo responsabilidad por su veracidad. Entiendo que omitir esta declaración constituye falta grave.
 
-Firma: *(firma manuscrita en el PDF original)*
+Firma: [omitida en la copia del repositorio]
 
 Cédula: [omitido]
 
