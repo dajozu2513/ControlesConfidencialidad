@@ -1,18 +1,20 @@
 # Controles ISO 27001:2022 para la Confidencialidad en Bases de Datos Oracle
 
-David Joel Soto Zuñiga · Administración de Bases de Datos · Escuela de Informática, Universidad Nacional · Prof. Johnny Villalobos Murillo · II Ciclo 2026
+**David Joel Soto Zuñiga** · Administración de Bases de Datos · Escuela de Informática, Universidad Nacional · Prof. Johnny Villalobos Murillo · II Ciclo 2026
 
 Oct 21, 2026 · @Joel Soto
 
-### Entregables
+## Entregables
 
 | Entregable | Formato | Cómo usarlo |
-| --- | --- | --- |
+|---|---|---|
 | Informe | Este documento en PDF | Lectura directa |
 | Artefacto interactivo | Archivo `artefacto_iso27001_dba.zip` | Descomprimir y abrir `artefacto/index.html` en el navegador; no requiere conexión ni servidor |
 | Scripts de verificación | Incluidos en el mismo archivo, carpeta `sql/` | También pueden verse y copiarse desde la sección Scripts del artefacto |
 | Evidencias de ejecución | Incluidas en el mismo archivo, carpeta `evidencias/` | Enlazadas desde la batería de pruebas del artefacto |
 | Registro de uso de IA | Incluido en el mismo archivo, carpeta `ia/` | Texto literal completo de los prompts de Claude Code |
+
+---
 
 ## 1. Introducción y objetivos
 
@@ -32,6 +34,8 @@ Diseñar e implementar un marco de controles basado en ISO/IEC 27001:2022 (Anexo
 4. Diseñar una matriz de evaluación con criterios de madurez 0-4, evidencia y estado (Cumple, Parcial, No cumple).
 5. Proponer y ejecutar pruebas técnicas (consultas SQL, revisión de configuraciones y auditorías) que demuestren la efectividad de los controles.
 
+---
+
 ## 2. Marco teórico
 
 La confidencialidad en una base de datos Oracle depende de capas complementarias: identidad y privilegios, cifrado, ocultamiento de datos, registro de actividad y cumplimiento legal. Esta sección resume el fundamento normativo y técnico de cada capa.
@@ -41,7 +45,7 @@ La confidencialidad en una base de datos Oracle depende de capas complementarias
 La edición 2022 reorganizó el Anexo A de 114 controles en 14 dominios a 93 controles en 4 temas (ISO, 2022a). De los 93, 35 se mantuvieron, 23 se renombraron, 57 se fusionaron en 24 y 11 son nuevos (Kertos, s.f.).
 
 | Aspecto | ISO/IEC 27001:2013 | ISO/IEC 27001:2022 |
-| --- | --- | --- |
+|---|---|---|
 | Controles del Anexo A | 114 | 93 |
 | Estructura | 14 dominios (A.5 a A.18) | 4 temas: organizacionales A5 (37), personas A6 (8), físicos A7 (14), tecnológicos A8 (34) |
 | Controles nuevos | No aplica | 11: A5.7, A5.23, A5.30, A7.4, A8.9, A8.10, A8.11, A8.12, A8.16, A8.23, A8.28 |
@@ -59,7 +63,7 @@ El DBA es el caso más delicado, porque el privilegio SYSDBA concentra casi todo
 - Usar privilegios de objeto en lugar de privilegios de sistema siempre que sea posible.
 - Asignar privilegios mediante roles por función, no directamente a usuarios.
 - Reservar SYS para acciones que lo requieran y usar cuentas nominales para la operación diaria.
-- Separar la administración de la auditoría con los roles AUDIT\_ADMIN y AUDIT\_VIEWER.
+- Separar la administración de la auditoría con los roles `AUDIT_ADMIN` y `AUDIT_VIEWER`.
 
 ### 2.3 Defensa en profundidad y Zero Trust aplicados a bases de datos
 
@@ -72,23 +76,25 @@ Zero Trust parte de que no existe confianza implícita por la ubicación de red 
 Oracle cubre los mecanismos solicitados con funciones propias; algunos nombres difieren de los usados en otros motores.
 
 | Control | Qué protege | Mecanismo en Oracle 21c | Evidencia observable |
-| --- | --- | --- | --- |
+|---|---|---|---|
 | Transparent Data Encryption (TDE) | Datos en reposo: archivos de datos y respaldos | Keystore definido con los parámetros `WALLET_ROOT` y `TDE_CONFIGURATION`; cifrado de tablespace o de columna | `V$ENCRYPTION_WALLET`, `V$ENCRYPTED_TABLESPACES` |
 | Data Redaction | Datos mostrados en consultas | Paquete `DBMS_REDACT`; redacción completa, parcial, aleatoria o nula en tiempo de ejecución | `REDACTION_POLICIES`, `REDACTION_COLUMNS` |
-| Virtual Private Database (VPD) | Filas y columnas por usuario | Paquete `DBMS_RLS`; agrega un predicado WHERE a cada consulta | `DBA_POLICIES` |
+| Virtual Private Database (VPD) | Filas y columnas por usuario | Paquete `DBMS_RLS`; agrega un predicado `WHERE` a cada consulta | `DBA_POLICIES` |
 | Cifrado en tránsito | Datos entre cliente y servidor | TLS (protocolo TCPS) o cifrado nativo de red (Native Network Encryption) | `V$SESSION_CONNECT_INFO`, `sqlnet.ora` |
 
 TDE usa una arquitectura de dos niveles: una llave maestra, guardada en el keystore, cifra las llaves de cada tabla o tablespace (Oracle, 2024). Por eso el keystore debe respaldarse y custodiarse por separado de los datos.
 
-Data Redaction oculta los datos en el momento de la consulta sin modificar lo almacenado (Oracle, 2024). Es el equivalente en Oracle de lo que SQL Server llama *Dynamic Data Masking*. Oracle advierte que, cuando se accede directo a la base, la redacción debe combinarse con controles sobre usuarios privilegiados, ya que el privilegio EXEMPT REDACTION POLICY la omite. El enmascaramiento estático para clones DEV/TEST (A8.11) es distinto: altera los datos de forma permanente en la copia.
+Data Redaction oculta los datos en el momento de la consulta sin modificar lo almacenado (Oracle, 2024). Es el equivalente en Oracle de lo que SQL Server llama Dynamic Data Masking. Oracle advierte que, cuando se accede directo a la base, la redacción debe combinarse con controles sobre usuarios privilegiados, ya que el privilegio `EXEMPT REDACTION POLICY` la omite. El enmascaramiento estático para clones DEV/TEST (A8.11) es distinto: altera los datos de forma permanente en la copia.
 
-VPD es la combinación de control de acceso de grano fino y contexto de aplicación; el servidor aplica la política sin importar desde qué herramienta se consulte (Oracle, 2021). Para el cifrado en tránsito, Oracle ofrece TLS, estándar de la industria, y su cifrado nativo; con el nativo, los clientes incompatibles pueden caer a conexiones sin cifrar, lo que debe evitarse con la configuración del servidor (Oracle, 2021).
+VPD es la combinación de control de acceso de grano fino y contexto de aplicación; el servidor aplica la política sin importar desde qué herramienta se consulte (Oracle, 2021).
+
+Para el cifrado en tránsito, Oracle ofrece TLS, estándar de la industria, y su cifrado nativo; con el nativo, los clientes incompatibles pueden caer a conexiones sin cifrar, lo que debe evitarse con la configuración del servidor (Oracle, 2021).
 
 La disponibilidad de TDE, Data Redaction y VPD depende de la edición instalada, por lo que se verifica de forma explícita en el entorno del proyecto (sección 3).
 
 ### 2.5 Prevención de fuga de datos y respaldos cifrados
 
-El control A8.12 (nuevo en 2022) busca impedir la divulgación no autorizada de información por cualquier canal (ISO, 2022b). En la base de datos, los canales de fuga más comunes son las exportaciones con Data Pump, los objetos DIRECTORY con escritura al sistema de archivos, los enlaces de base de datos y las consultas masivas de cuentas privilegiadas. La prevención combina restricción de esos privilegios con auditoría de su uso.
+El control A8.12 (nuevo en 2022) busca impedir la divulgación no autorizada de información por cualquier canal (ISO, 2022b). En la base de datos, los canales de fuga más comunes son las exportaciones con Data Pump, los objetos `DIRECTORY` con escritura al sistema de archivos, los enlaces de base de datos y las consultas masivas de cuentas privilegiadas. La prevención combina restricción de esos privilegios con auditoría de su uso.
 
 Los respaldos son una copia completa de los datos y requieren la misma protección que la base en producción (A8.13). RMAN permite cifrar respaldos en modo transparente (con el keystore de TDE), por contraseña o dual. La eliminación segura (A8.10) cubre respaldos obsoletos, archivos de exportación y la papelera de reciclaje; destruir la llave de cifrado vuelve ilegibles todas las copias cifradas con ella.
 
@@ -104,6 +110,8 @@ La Ley 8968, Protección de la Persona frente al Tratamiento de sus Datos Person
 
 Para el DBA, la ley impone dos obligaciones directas: adoptar medidas técnicas y organizativas que garanticen la seguridad de los datos, y mantener la confidencialidad de la información tratada. La ley distingue además los datos sensibles, relativos al fuero íntimo de la persona, que requieren la protección más alta. Los controles de este informe son la implementación técnica de esas obligaciones, y el control A5.34 (privacidad y protección de datos personales) es el puente formal entre la ley y la norma ISO.
 
+---
+
 ## 3. Metodología y entorno
 
 El proyecto aplica el ciclo PHVA sobre una instancia Oracle Database 21c Express Edition, cuyas capacidades de seguridad se verificaron antes de diseñar los controles.
@@ -111,7 +119,7 @@ El proyecto aplica el ciclo PHVA sobre una instancia Oracle Database 21c Express
 ### 3.1 Ciclo PHVA aplicado
 
 | Etapa | Actividades | Secciones del informe |
-| --- | --- | --- |
+|---|---|---|
 | Planificar | Identificar riesgos y tareas del DBA, seleccionar controles del Anexo A y definir criterios de madurez | 4, 5, 6 y 7 |
 | Hacer | Implementar los controles en Oracle con scripts de configuración | 6 y 9 |
 | Verificar | Ejecutar la batería de pruebas, recolectar evidencia y calificar la matriz | 8 y 9 |
@@ -120,11 +128,11 @@ El proyecto aplica el ciclo PHVA sobre una instancia Oracle Database 21c Express
 ### 3.2 Entorno de trabajo
 
 | Elemento | Valor |
-| --- | --- |
+|---|---|
 | Motor | Oracle Database 21c Express Edition 21.3.0.0.0 |
 | Arquitectura | Multitenant: contenedor raíz `CDB$ROOT` (servicio XE) y PDB `XEPDB1` en modo READ WRITE |
 | Modo de archivado | ARCHIVELOG |
-| Herramientas | SQL\*Plus, SQL Developer, Git |
+| Herramientas | SQL*Plus, SQL Developer, Git |
 | Conexión administrativa | SYSDBA con autenticación del sistema operativo |
 | Repositorio | Scripts en `sql/`, evidencia en `evidencias/`, registro de IA en `ia/` |
 
@@ -133,7 +141,7 @@ El proyecto aplica el ciclo PHVA sobre una instancia Oracle Database 21c Express
 El script `sql/00_entorno/00_verificar_entorno.sql` se ejecutó en `CDB$ROOT` y en `XEPDB1` con resultados idénticos; la salida está en `evidencias/00_entorno.txt`.
 
 | Función | Disponible | Estado inicial |
-| --- | --- | --- |
+|---|---|---|
 | Transparent Data Encryption | Sí | Keystore no configurado (`NOT_AVAILABLE`); `WALLET_ROOT` y `TDE_CONFIGURATION` vacíos; ningún tablespace cifrado |
 | Data Redaction (`DBMS_REDACT`) | Sí | Paquete válido, sin políticas |
 | Virtual Private Database (`DBMS_RLS`) | Sí | Paquete válido, opción de control de acceso de grano fino activa |
@@ -149,12 +157,14 @@ Dos consecuencias guían el diseño. Primero, TDE, Data Redaction, VPD y la audi
 Los controles se aplican sobre el esquema `CLINICA` en `XEPDB1`, que simula una clínica privada. Contiene pacientes (cédula, nombre, fecha de nacimiento, teléfono, correo y dirección), médicos y consultas (diagnóstico y tratamiento). Los diagnósticos son datos sensibles según la Ley 8968, y la cédula y los datos de contacto son datos personales de acceso restringido.
 
 | Perfil | Necesidad de acceso | Control principal |
-| --- | --- | --- |
+|---|---|---|
 | Médico | Solo las consultas de sus propios pacientes | VPD |
 | Recepción | Datos de contacto, sin diagnósticos y con cédula parcial | Privilegios de objeto y Data Redaction |
 | Auditor | Lectura de la auditoría, sin acceso a datos clínicos | Rol `AUDIT_VIEWER` |
 | DBA operativo | Administración y respaldos, sin uso rutinario de SYSDBA | Privilegios administrativos por tarea y auditoría |
 | Desarrollador | Solo clones DEV/TEST con datos enmascarados | Enmascaramiento estático |
+
+---
 
 ## 4. Riesgos de confidencialidad
 
@@ -163,19 +173,21 @@ Cuatro de los cinco riesgos identificados tienen nivel Alto; el más crítico es
 La probabilidad (P) y el impacto (I) se califican de 1 a 5. El nivel es P × I: Bajo de 1 a 6, Medio de 8 a 12 y Alto de 15 a 25. El impacto 5 corresponde a la exposición de datos sensibles protegidos por la Ley 8968.
 
 | ID | Riesgo | Escenario en la clínica | Activo afectado | P | I | Nivel |
-| --- | --- | --- | --- | --- | --- | --- |
+|---|---|---|---|---|---|---|
 | R-CONF-01 | Privilegios excesivos o cuentas privilegiadas compartidas | Un usuario de soporte con el rol DBA o con SELECT ANY TABLE consulta diagnósticos de pacientes; varias personas usan SYS | Expedientes clínicos | 4 | 5 | 20 Alto |
 | R-CONF-02 | Autenticación débil y servicios expuestos | Un atacante ingresa con una contraseña por defecto o de una cuenta inactiva, o aprovecha un listener sin restricciones o una versión sin parches | Cuentas de base de datos y listener | 3 | 5 | 15 Alto |
 | R-CONF-03 | Datos sin cifrar en reposo, en tránsito o en respaldos | Se copia un archivo de datos, un respaldo RMAN o un archivo de Data Pump sin cifrar, o se intercepta el tráfico entre la aplicación y la base | Archivos de datos, respaldos y conexiones | 3 | 5 | 15 Alto |
 | R-CONF-04 | Exposición de datos sensibles a usuarios sin necesidad de conocerlos | Recepción ve cédulas completas y diagnósticos; desarrolladores reciben un clon con datos reales de pacientes | Columnas sensibles y clones DEV/TEST | 4 | 4 | 16 Alto |
 | R-CONF-05 | Fuga de información sin detección | Un usuario privilegiado exporta datos y no queda registro revisable, o se purgan las trazas de auditoría sin control | Auditoría y registros | 3 | 4 | 12 Medio |
 
+---
+
 ## 5. Tareas críticas del DBA
 
 Las doce tareas cubren los cinco riesgos; R-CONF-02 y R-CONF-03 son los que más tareas involucran, con cuatro cada uno.
 
 | ID | Tarea | Actividad del DBA en la clínica | Riesgos |
-| --- | --- | --- | --- |
+|---|---|---|---|
 | T-01 | Gestión de usuarios | Crear cuentas nominales, bloquear cuentas por defecto e inactivas y dar de baja a quien deja la clínica | R-CONF-01, R-CONF-02 |
 | T-02 | Gestión de privilegios | Definir roles por perfil, revocar privilegios ANY y concesiones a PUBLIC, usar privilegios administrativos por tarea | R-CONF-01 |
 | T-03 | Autenticación | Aplicar perfiles con complejidad, expiración y bloqueo por intentos fallidos | R-CONF-02 |
@@ -189,6 +201,8 @@ Las doce tareas cubren los cinco riesgos; R-CONF-02 y R-CONF-03 son los que más
 | T-11 | Gestión de logs | Definir retención y purga controlada de la auditoría, proteger los registros y enviarlos a un SIEM | R-CONF-05 |
 | T-12 | Clones DEV/TEST | Enmascarar de forma estática los datos antes de entregar un clon y usar cuentas distintas a las de producción | R-CONF-04 |
 
+---
+
 ## 6. Mapeo de controles ISO/IEC 27001:2022
 
 Los 15 controles solicitados se implementan con funciones nativas de Oracle 21c XE. Se agregan dos controles complementarios: A8.24, porque el cifrado TDE (T-04) no queda cubierto por ninguno de los 15, y A8.8, porque el parcheo (T-08) tampoco.
@@ -196,7 +210,7 @@ Los 15 controles solicitados se implementan con funciones nativas de Oracle 21c 
 ### 6.1 Controles organizacionales (A5)
 
 | Control | Tareas y riesgos | Justificación | Implementación en Oracle 21c XE | Evidencia observable |
-| --- | --- | --- | --- | --- |
+|---|---|---|---|---|
 | A5.12 Clasificación de la información | T-05, T-12 · R-CONF-04 | Sin clasificar las columnas no se sabe qué ocultar ni qué enmascarar | Etiquetar cada columna de `CLINICA` como Pública, Interna, Confidencial o Sensible con `COMMENT ON COLUMN` | `SELECT table_name, column_name, comments FROM dba_col_comments WHERE owner = 'CLINICA'` |
 | A5.15 Control de acceso | T-02 · R-CONF-01, R-CONF-04 | El acceso a expedientes debe responder a una política por perfil, no a concesiones individuales | Un rol por perfil (médico, recepción, auditor) con privilegios de objeto; ninguna concesión a PUBLIC sobre `CLINICA` | `SELECT grantee, table_name, privilege FROM dba_tab_privs WHERE owner = 'CLINICA'` |
 | A5.16 Gestión de identidades | T-01 · R-CONF-01, R-CONF-02 | Cada acción debe atribuirse a una persona identificable | Cuentas nominales únicas; cuentas por defecto bloqueadas; cuentas sin uso en 90 días bloqueadas | `SELECT username, account_status, last_login FROM dba_users WHERE oracle_maintained = 'N'` y `SELECT * FROM dba_users_with_defpwd` |
@@ -207,13 +221,13 @@ Los 15 controles solicitados se implementan con funciones nativas de Oracle 21c 
 ### 6.2 Controles tecnológicos (A8)
 
 | Control | Tareas y riesgos | Justificación | Implementación en Oracle 21c XE | Evidencia observable |
-| --- | --- | --- | --- | --- |
+|---|---|---|---|---|
 | A8.2 Derechos de acceso privilegiado | T-02 · R-CONF-01 | El DBA es el usuario con más poder sobre los expedientes | Rol DBA solo para administradores nominales; sin privilegios ANY para usuarios de aplicación; SYSBACKUP y SYSKM en lugar de SYSDBA para tareas específicas | `SELECT grantee FROM dba_role_privs WHERE granted_role = 'DBA'`, `SELECT grantee, privilege FROM dba_sys_privs WHERE privilege LIKE '%ANY%'` y `SELECT * FROM v$pwfile_users` |
 | A8.3 Restricción de acceso a la información | T-05 · R-CONF-04 | Un médico solo debe ver las consultas de sus pacientes | Política VPD con `DBMS_RLS` sobre `CONSULTAS`, filtrada por el médico de la sesión | `SELECT object_name, policy_name, enable FROM dba_policies WHERE object_owner = 'CLINICA'` y conteo de filas visto por cada médico |
 | A8.5 Autenticación segura | T-03 · R-CONF-02 | Los ataques de fuerza bruta deben bloquearse y quedar registrados | `FAILED_LOGIN_ATTEMPTS` y `PASSWORD_LOCK_TIME` en el perfil; solo verificadores de contraseña de versión 12C | `SELECT username, password_versions FROM dba_users` y registros de `ORA_LOGON_FAILURES` en `unified_audit_trail` |
 | A8.10 Eliminación de información | T-10 · R-CONF-03, R-CONF-05 | Las copias residuales de datos clínicos siguen siendo datos personales | Purga de la papelera de reciclaje, eliminación de respaldos obsoletos con RMAN y borrado de archivos de exportación vencidos | `SELECT COUNT(*) FROM dba_recyclebin WHERE owner = 'CLINICA'` y salida de `REPORT OBSOLETE` en RMAN |
 | A8.11 Enmascaramiento de datos | T-05, T-12 · R-CONF-04 | Recepción y desarrollo no necesitan ver cédulas ni diagnósticos reales | Data Redaction parcial sobre la cédula y completa sobre el diagnóstico; script de enmascaramiento estático para clones | `SELECT * FROM redaction_policies` y `SELECT * FROM redaction_columns`; `SELECT grantee FROM dba_sys_privs WHERE privilege = 'EXEMPT REDACTION POLICY'` |
-| A8.12 Prevención de fuga de datos | T-07 · R-CONF-05 | Una exportación masiva es el canal más directo de fuga | Roles de Data Pump solo para el DBA; objetos DIRECTORY y enlaces de base de datos restringidos; política de auditoría sobre exportaciones | `SELECT grantee, granted_role FROM dba_role_privs WHERE granted_role LIKE 'DATAPUMP%'`, `SELECT * FROM dba_db_links` y `SELECT * FROM audit_unified_enabled_policies` |
+| A8.12 Prevención de fuga de datos | T-07 · R-CONF-05 | Una exportación masiva es el canal más directo de fuga | Roles de Data Pump solo para el DBA; objetos `DIRECTORY` y enlaces de base de datos restringidos; política de auditoría sobre exportaciones | `SELECT grantee, granted_role FROM dba_role_privs WHERE granted_role LIKE 'DATAPUMP%'`, `SELECT * FROM dba_db_links` y `SELECT * FROM audit_unified_enabled_policies` |
 | A8.13 Respaldo de información | T-06 · R-CONF-03 | Un respaldo sin cifrar es una copia completa de los expedientes | RMAN con cifrado AES256 y prueba de restauración | `SELECT * FROM v$rman_configuration` y `SELECT handle, encrypted FROM v$backup_piece` |
 | A8.15 Registro | T-07, T-11 · R-CONF-05 | Sin registro no hay forma de detectar ni probar un acceso indebido | Políticas unificadas sobre usuarios privilegiados, lectura de `CONSULTAS` y cambios de privilegios | `SELECT policy_name, entity_name FROM audit_unified_enabled_policies` y consultas a `unified_audit_trail` |
 | A8.20 Seguridad de redes | T-09 · R-CONF-02, R-CONF-03 | El listener es la puerta de entrada a la base | Cifrado obligatorio y verificación de nodos en `sqlnet.ora`; revisión de servicios expuestos en el listener | `sqlnet.ora` con `SQLNET.ENCRYPTION_SERVER = REQUIRED` y `TCP.VALIDNODE_CHECKING = YES`; `SELECT network_service_banner FROM v$session_connect_info` desde una sesión TCP |
@@ -221,16 +235,18 @@ Los 15 controles solicitados se implementan con funciones nativas de Oracle 21c 
 ### 6.3 Controles complementarios
 
 | Control | Tareas y riesgos | Justificación | Implementación en Oracle 21c XE | Evidencia observable |
-| --- | --- | --- | --- | --- |
+|---|---|---|---|---|
 | A8.24 Uso de criptografía | T-04 · R-CONF-03 | El cifrado en reposo requiere una gestión formal de llaves | Keystore TDE bajo `WALLET_ROOT`, llave maestra, tablespace `CLINICA_DATA` cifrado con AES256 y respaldo del keystore fuera del servidor | `SELECT * FROM v$encryption_wallet` y `SELECT tablespace_name, encrypted FROM dba_tablespaces` |
 | A8.8 Gestión de vulnerabilidades técnicas | T-08 · R-CONF-02 | Una versión con vulnerabilidades conocidas expone todos los controles | Inventario de versión y componentes; plan de actualización a una versión soportada | `SELECT banner_full FROM v$version`, `SELECT comp_name, version, status FROM dba_registry` y `SELECT * FROM dba_registry_sqlpatch` |
+
+---
 
 ## 7. Controles observables por auditor externo
 
 Cada uno de los 15 controles tiene un criterio de cumplimiento verificable y un script que un auditor puede ejecutar con permisos de solo lectura; los dos controles complementarios usan los scripts `v16_cifrado_tde.sql` y `v17_version.sql`.
 
 | N.º | Control | Qué observa el auditor | Criterio de cumplimiento | Script en `sql/02_verificacion/` |
-| --- | --- | --- | --- | --- |
+|---|---|---|---|---|
 | OC-01 | A5.12 Clasificación | Etiquetas de clasificación en las columnas de `CLINICA` | El 100 % de las columnas tiene etiqueta | `v01_clasificacion.sql` |
 | OC-02 | A5.15 Control de acceso | Privilegios de objeto sobre `CLINICA` | Ninguna concesión a PUBLIC; todos los privilegios se otorgan mediante roles | `v02_control_acceso.sql` |
 | OC-03 | A5.16 Gestión de identidades | Estado de las cuentas | Ninguna cuenta abierta con contraseña por defecto; ninguna cuenta compartida | `v03_identidades.sql` |
@@ -247,6 +263,8 @@ Cada uno de los 15 controles tiene un criterio de cumplimiento verificable y un 
 | OC-14 | A8.15 Registro | Políticas de auditoría activas y registros generados | Políticas activas sobre privilegiados, `CONSULTAS` y cambios de privilegios, con registros de las pruebas | `v14_auditoria.sql` |
 | OC-15 | A8.20 Seguridad de redes | Configuración de red y cifrado de la sesión | Sesión TCP con cifrado AES activo; verificación de nodos habilitada | `v15_red.sql` |
 
+---
+
 ## 8. Matriz de evaluación
 
 De los 17 controles evaluados, 15 cumplen con nivel 3 (Verificado) y 2 quedan en Parcial con nivel 2: A8.12, porque XE no permite cifrar las exportaciones, y A8.8, porque XE no recibe parches. Ningún control llega al nivel 4, ya que no hay monitoreo continuo ni revisiones automatizadas; esas mejoras están en la sección 10.
@@ -254,7 +272,7 @@ De los 17 controles evaluados, 15 cumplen con nivel 3 (Verificado) y 2 quedan en
 ### 8.1 Escala de madurez
 
 | Nivel | Nombre | Condición observable |
-| --- | --- | --- |
+|---|---|---|
 | 0 | Inexistente | El control no está implementado |
 | 1 | Inicial | Implementado de forma parcial o manual, sin documentación ni evidencia |
 | 2 | Definido | Implementado y documentado, sin una prueba que demuestre su efectividad |
@@ -266,7 +284,7 @@ Regla de estado: nivel 3 o 4 es Cumple, nivel 1 o 2 es Parcial y nivel 0 es No c
 ### 8.2 Matriz
 
 | Tarea | Riesgo | Control | Criterio 0-4 | Evidencia | Estado |
-| --- | --- | --- | --- | --- | --- |
+|---|---|---|---|---|---|
 | T-01 | R-CONF-01, R-CONF-02 | A5.16 Gestión de identidades | 3 Verificado | `evidencias/v03_identidades.txt` | Cumple |
 | T-01, T-02 | R-CONF-01 | A5.18 Derechos de acceso | 3 Verificado | `evidencias/v05_revision_derechos.txt` | Cumple |
 | T-02 | R-CONF-01, R-CONF-04 | A5.15 Control de acceso | 3 Verificado | `evidencias/v02_control_acceso.txt` | Cumple |
@@ -285,6 +303,8 @@ Regla de estado: nivel 3 o 4 es Cumple, nivel 1 o 2 es Parcial y nivel 0 es No c
 | T-09 | R-CONF-02, R-CONF-03 | A8.20 Seguridad de redes | 3 Verificado | `evidencias/v15_red.txt` | Cumple |
 | T-10 | R-CONF-03, R-CONF-05 | A8.10 Eliminación de información | 3 Verificado | `evidencias/v10_eliminacion.txt` | Cumple |
 
+---
+
 ## 9. Batería de pruebas y scripts
 
 La batería tiene 26 pruebas: 10 de configuración, que leen el diccionario o archivos, y 16 funcionales, que intentan una acción con un usuario de prueba y comprueban que el control la permite o la bloquea. Los resultados obtenidos están en la sección 9.4.
@@ -292,44 +312,44 @@ La batería tiene 26 pruebas: 10 de configuración, que leen el diccionario o ar
 ### 9.1 Usuarios y roles de prueba
 
 | Usuario | Rol | Perfil del escenario |
-| --- | --- | --- |
+|---|---|---|
 | `CLINICA` | Ninguno (cuenta propietaria, bloqueada tras la carga) | Dueño del esquema |
 | `MED_ROJAS`, `MED_MORA` | `ROL_MEDICO` | Médicos |
 | `RECEP_SOLIS` | `ROL_RECEPCION` | Recepción |
 | `AUD_VEGA` | `ROL_AUDITOR` (con `AUDIT_VIEWER`) | Auditor |
-| `DBA_OPER` | `DBA`, con privilegios administrativos `SYSBACKUP` y `SYSKM` | DBA operativo |
+| `DBA_OPER` | `DBA`, con privilegios administrativos SYSBACKUP y SYSKM | DBA operativo |
 | `DEV_CALVO` | `ROL_DESARROLLO` | Desarrollador, solo sobre `CLINICA_DEV` |
 
 ### 9.2 Batería
 
 | ID | Tipo | Control | Procedimiento | Resultado esperado | Herramienta |
-| --- | --- | --- | --- | --- | --- |
-| PR-01 | Configuración | A5.12 | Contar las columnas de `CLINICA` sin comentario en `dba_col_comments` | 0 columnas sin clasificar | SQL\*Plus |
-| PR-02 | Configuración | A5.15 | Listar privilegios sobre `CLINICA` otorgados a PUBLIC o a usuarios directos | 0 filas; solo roles `ROL_*` como beneficiarios | SQL\*Plus |
-| PR-03 | Funcional | A5.15 | Como `RECEP_SOLIS`, consultar `CLINICA.CONSULTAS` | Error ORA-00942: la tabla no es visible | SQL\*Plus |
-| PR-04 | Configuración | A5.16 | Cruzar `dba_users_with_defpwd` con cuentas abiertas | 0 cuentas abiertas con contraseña por defecto | SQL\*Plus |
-| PR-05 | Configuración | A5.17 | Consultar los límites de `PERFIL_CLINICA` y los usuarios que lo tienen asignado | Función `ORA12C_STRONG_VERIFY_FUNCTION`, vigencia 90 días, reutilización 5; todos los usuarios de prueba asignados | SQL\*Plus |
-| PR-06 | Funcional | A5.17 | Cambiar la contraseña de `MED_ROJAS` a `abc123` | Error ORA-28003: la contraseña no cumple la verificación | SQL\*Plus |
-| PR-07 | Configuración | A5.18 | Ejecutar el inventario de usuarios, roles y último acceso | Reporte fechado; 0 cuentas abiertas sin acceso en más de 90 días | SQL\*Plus |
-| PR-08 | Funcional | A5.33 | Como `DBA_OPER`, ejecutar `DELETE` sobre `AUDSYS.AUD$UNIFIED` | Error ORA-46385: no se permite DML sobre la auditoría | SQL\*Plus |
-| PR-09 | Funcional | A5.33 | Purgar registros con `DBMS_AUDIT_MGMT` y consultar la auditoría | La purga queda registrada en `unified_audit_trail` | SQL\*Plus |
-| PR-10 | Configuración | A8.2 | Listar beneficiarios del rol DBA, privilegios ANY de cuentas no administrativas y `v$pwfile_users` | DBA solo en SYS, SYSTEM y `DBA_OPER`; 0 privilegios ANY fuera de ellos; `DBA_OPER` con SYSBACKUP y SYSKM | SQL\*Plus |
-| PR-11 | Funcional | A8.2 | Conectar como `DBA_OPER AS SYSBACKUP` y consultar `CLINICA.CONSULTAS` | Error: SYSBACKUP no tiene acceso a datos de aplicación | SQL\*Plus |
-| PR-12 | Funcional | A8.3 | Contar filas de `CONSULTAS` como `MED_ROJAS`, como `MED_MORA` y como dueño | Cada médico ve solo sus consultas; la suma coincide con el total | SQL\*Plus |
-| PR-13 | Funcional | A8.5 | Intentar 6 conexiones con contraseña errónea como `MED_MORA` | Cuenta en estado LOCKED(TIMED) tras el quinto intento; intentos con código 1017 en la auditoría | SQL\*Plus |
-| PR-14 | Configuración | A8.5 | Consultar `password_versions` de los usuarios de prueba | Solo el verificador 12C, con `SQLNET.ALLOWED_LOGON_VERSION_SERVER = 12a` | SQL\*Plus |
-| PR-15 | Funcional | A8.10 | Crear y borrar una tabla temporal en `CLINICA`, purgar la papelera y consultar `dba_recyclebin` | 0 objetos en la papelera de `CLINICA` | SQL\*Plus |
+|---|---|---|---|---|---|
+| PR-01 | Configuración | A5.12 | Contar las columnas de `CLINICA` sin comentario en `dba_col_comments` | 0 columnas sin clasificar | SQL*Plus |
+| PR-02 | Configuración | A5.15 | Listar privilegios sobre `CLINICA` otorgados a PUBLIC o a usuarios directos | 0 filas; solo roles `ROL_*` como beneficiarios | SQL*Plus |
+| PR-03 | Funcional | A5.15 | Como `RECEP_SOLIS`, consultar `CLINICA.CONSULTAS` | Error ORA-00942: la tabla no es visible | SQL*Plus |
+| PR-04 | Configuración | A5.16 | Cruzar `dba_users_with_defpwd` con cuentas abiertas | 0 cuentas abiertas con contraseña por defecto | SQL*Plus |
+| PR-05 | Configuración | A5.17 | Consultar los límites de `PERFIL_CLINICA` y los usuarios que lo tienen asignado | Función `ORA12C_STRONG_VERIFY_FUNCTION`, vigencia 90 días, reutilización 5; todos los usuarios de prueba asignados | SQL*Plus |
+| PR-06 | Funcional | A5.17 | Cambiar la contraseña de `MED_ROJAS` a `abc123` | Error ORA-28003: la contraseña no cumple la verificación | SQL*Plus |
+| PR-07 | Configuración | A5.18 | Ejecutar el inventario de usuarios, roles y último acceso | Reporte fechado; 0 cuentas abiertas sin acceso en más de 90 días | SQL*Plus |
+| PR-08 | Funcional | A5.33 | Como `DBA_OPER`, ejecutar `DELETE` sobre `AUDSYS.AUD$UNIFIED` | Error ORA-46385: no se permite DML sobre la auditoría | SQL*Plus |
+| PR-09 | Funcional | A5.33 | Purgar registros con `DBMS_AUDIT_MGMT` y consultar la auditoría | La purga queda registrada en `unified_audit_trail` | SQL*Plus |
+| PR-10 | Configuración | A8.2 | Listar beneficiarios del rol DBA, privilegios ANY de cuentas no administrativas y `v$pwfile_users` | DBA solo en SYS, SYSTEM y `DBA_OPER`; 0 privilegios ANY fuera de ellos; `DBA_OPER` con SYSBACKUP y SYSKM | SQL*Plus |
+| PR-11 | Funcional | A8.2 | Conectar como `DBA_OPER AS SYSBACKUP` y consultar `CLINICA.CONSULTAS` | Error: SYSBACKUP no tiene acceso a datos de aplicación | SQL*Plus |
+| PR-12 | Funcional | A8.3 | Contar filas de `CONSULTAS` como `MED_ROJAS`, como `MED_MORA` y como dueño | Cada médico ve solo sus consultas; la suma coincide con el total | SQL*Plus |
+| PR-13 | Funcional | A8.5 | Intentar 6 conexiones con contraseña errónea como `MED_MORA` | Cuenta en estado `LOCKED(TIMED)` tras el quinto intento; intentos con código 1017 en la auditoría | SQL*Plus |
+| PR-14 | Configuración | A8.5 | Consultar `password_versions` de los usuarios de prueba | Solo el verificador 12C, con `SQLNET.ALLOWED_LOGON_VERSION_SERVER = 12a` | SQL*Plus |
+| PR-15 | Funcional | A8.10 | Crear y borrar una tabla temporal en `CLINICA`, purgar la papelera y consultar `dba_recyclebin` | 0 objetos en la papelera de `CLINICA` | SQL*Plus |
 | PR-16 | Funcional | A8.10 | Ejecutar `DELETE OBSOLETE` y luego `REPORT OBSOLETE` | Ningún respaldo obsoleto reportado | RMAN |
-| PR-17 | Funcional | A8.11 | Como `RECEP_SOLIS`, consultar cédula y teléfono de `PACIENTES` | Cédula con solo los últimos 4 dígitos visibles | SQL\*Plus |
-| PR-18 | Configuración | A8.11 | Consultar `redaction_policies` y beneficiarios de `EXEMPT REDACTION POLICY` | Políticas activas; exención solo en roles administrativos | SQL\*Plus |
-| PR-19 | Funcional | A8.11 | Cruzar las cédulas de `CLINICA_DEV` con las de `CLINICA` | 0 coincidencias: el clon no contiene datos reales | SQL\*Plus |
-| PR-20 | Configuración | A8.12 | Listar beneficiarios de roles de Data Pump, enlaces de base de datos y privilegios sobre directorios | Roles de Data Pump solo en DBA; 0 enlaces | SQL\*Plus |
-| PR-21 | Funcional | A8.12 | Exportar `CLINICA` con Data Pump como `DBA_OPER` y consultar la auditoría | Registro de la exportación en `unified_audit_trail` | Data Pump, SQL\*Plus |
-| PR-22 | Funcional | A8.13 | Respaldar con cifrado activo, consultar `v$backup_piece` y validar la restauración | Piezas con `ENCRYPTED = YES`; `RESTORE ... VALIDATE` exitoso | RMAN, SQL\*Plus |
-| PR-23 | Funcional | A8.15 | Como `MED_ROJAS`, consultar `CONSULTAS` y revisar la auditoría | Registro con usuario, objeto y fecha de la consulta | SQL\*Plus |
-| PR-24 | Revisión de archivo | A8.20 | Revisar `sqlnet.ora` del servidor | Cifrado e integridad en REQUIRED y verificación de nodos activa | Editor de texto |
-| PR-25 | Funcional | A8.20 | Conectar por TCP a `XEPDB1` y consultar `v$session_connect_info` de la sesión | Servicio de cifrado AES256 activo | SQL\*Plus |
-| PR-26 | Funcional | A8.24 | Forzar un checkpoint y buscar el nombre de un paciente en el archivo de datos cifrado y en uno sin cifrar | Texto no encontrado en el cifrado; encontrado en el de control | PowerShell, SQL\*Plus |
+| PR-17 | Funcional | A8.11 | Como `RECEP_SOLIS`, consultar cédula y teléfono de `PACIENTES` | Cédula con solo los últimos 4 dígitos visibles | SQL*Plus |
+| PR-18 | Configuración | A8.11 | Consultar `redaction_policies` y beneficiarios de `EXEMPT REDACTION POLICY` | Políticas activas; exención solo en roles administrativos | SQL*Plus |
+| PR-19 | Funcional | A8.11 | Cruzar las cédulas de `CLINICA_DEV` con las de `CLINICA` | 0 coincidencias: el clon no contiene datos reales | SQL*Plus |
+| PR-20 | Configuración | A8.12 | Listar beneficiarios de roles de Data Pump, enlaces de base de datos y privilegios sobre directorios | Roles de Data Pump solo en DBA; 0 enlaces | SQL*Plus |
+| PR-21 | Funcional | A8.12 | Exportar `CLINICA` con Data Pump como `DBA_OPER` y consultar la auditoría | Registro de la exportación en `unified_audit_trail` | Data Pump, SQL*Plus |
+| PR-22 | Funcional | A8.13 | Respaldar con cifrado activo, consultar `v$backup_piece` y validar la restauración | Piezas con `ENCRYPTED = YES`; `RESTORE ... VALIDATE` exitoso | RMAN, SQL*Plus |
+| PR-23 | Funcional | A8.15 | Como `MED_ROJAS`, consultar `CONSULTAS` y revisar la auditoría | Registro con usuario, objeto y fecha de la consulta | SQL*Plus |
+| PR-24 | Revisión de archivo | A8.20 | Revisar `sqlnet.ora` del servidor | Cifrado e integridad en `REQUIRED` y verificación de nodos activa | Editor de texto |
+| PR-25 | Funcional | A8.20 | Conectar por TCP a `XEPDB1` y consultar `v$session_connect_info` de la sesión | Servicio de cifrado AES256 activo | SQL*Plus |
+| PR-26 | Funcional | A8.24 | Forzar un checkpoint y buscar el nombre de un paciente en el archivo de datos cifrado y en uno sin cifrar | Texto no encontrado en el cifrado; encontrado en el de control | PowerShell, SQL*Plus |
 
 Los controles complementarios se verifican además con consultas de configuración en `v16_cifrado_tde.sql` (estado del keystore y tablespaces cifrados) y `v17_version.sql` (versión y componentes).
 
@@ -354,7 +374,7 @@ XE no permite cifrar en línea un tablespace existente, por lo que `CLINICA_DATA
 De las 26 pruebas, 25 cumplen el resultado esperado; PR-21 no cumple por una limitación de Oracle XE, que no incluye el cifrado de exportaciones de Data Pump. La ejecución completa se realiza con `sql/02_verificacion/ejecutar_todo.sh` y el consolidado está en `evidencias/resumen_pruebas.md`.
 
 | ID | Control | Resultado obtenido | Estado |
-| --- | --- | --- | --- |
+|---|---|---|---|
 | PR-01 | A5.12 | 0 columnas sin clasificar de 17 | Cumple |
 | PR-02 | A5.15 | 0 privilegios a PUBLIC o directos a usuarios | Cumple |
 | PR-03 | A5.15 | `RECEP_SOLIS` recibe ORA-00942 al consultar `CONSULTAS` | Cumple |
@@ -367,7 +387,7 @@ De las 26 pruebas, 25 cumplen el resultado esperado; PR-21 no cumple por una lim
 | PR-10 | A8.2 | Rol DBA solo en cuentas administrativas; `DBA_OPER` con SYSBACKUP y SYSKM | Cumple |
 | PR-11 | A8.2 | `DBA_OPER AS SYSBACKUP` no accede a `CONSULTAS` | Cumple |
 | PR-12 | A8.3 | `MED_ROJAS` 18 filas, `MED_MORA` 12, dueño 30 | Cumple |
-| PR-13 | A8.5 | Cuenta en LOCKED(TIMED) tras el quinto intento; intentos con código 1017 en la auditoría | Cumple |
+| PR-13 | A8.5 | Cuenta en `LOCKED(TIMED)` tras el quinto intento; intentos con código 1017 en la auditoría | Cumple |
 | PR-14 | A8.5 | Los 6 usuarios solo con verificador 12C | Cumple |
 | PR-15 | A8.10 | 0 objetos en la papelera de `CLINICA` | Cumple |
 | PR-16 | A8.10 | `REPORT OBSOLETE` sin resultados tras `DELETE OBSOLETE` | Cumple |
@@ -378,20 +398,22 @@ De las 26 pruebas, 25 cumplen el resultado esperado; PR-21 no cumple por una lim
 | PR-21 | A8.12 | Exportación cifrada rechazada con ORA-00439 (función no habilitada en XE); la exportación sin cifrar contiene el nombre del paciente en texto plano; la exportación sí queda auditada | No cumple |
 | PR-22 | A8.13 | Piezas de respaldo con `ENCRYPTED = YES` (AES256); `RESTORE ... VALIDATE` exitoso | Cumple |
 | PR-23 | A8.15 | `AUD_VEGA` ve el registro del acceso de `MED_ROJAS` a `CONSULTAS` | Cumple |
-| PR-24 | A8.20 | Cifrado e integridad en REQUIRED; con una IP fuera de la lista de nodos invitados, la conexión se rechaza con ORA-12537 | Cumple |
+| PR-24 | A8.20 | Cifrado e integridad en `REQUIRED`; con una IP fuera de la lista de nodos invitados, la conexión se rechaza con ORA-12537 | Cumple |
 | PR-25 | A8.20 | Sesión TCP con adaptadores AES256 y SHA256 activos | Cumple |
 | PR-26 | A8.24 | Nombre del paciente: 0 apariciones en el archivo cifrado y 1 en el de control | Cumple |
 
-Tres pruebas requirieron ajustar el script, no el control: PR-08 aceptó ORA-00942 como rechazo válido para `DBA_OPER`, PR-14 recortó un espacio final en `password_versions` y PR-20 excluyó el enlace interno de Oracle. Además, la prueba de AUTO\_LOGIN confirmó que tras un reinicio el keystore abre solo y los datos cifrados se leen sin intervención.
+Tres pruebas requirieron ajustar el script, no el control: PR-08 aceptó ORA-00942 como rechazo válido para `DBA_OPER`, PR-14 recortó un espacio final en `password_versions` y PR-20 excluyó el enlace interno de Oracle. Además, la prueba de AUTO_LOGIN confirmó que tras un reinicio el keystore abre solo y los datos cifrados se leen sin intervención.
+
+---
 
 ## 10. Plan de remediación (Actuar)
 
 El plan cierra los dos controles en estado Parcial, reduce el riesgo residual del acceso privilegiado y propone las mejoras necesarias para llevar los controles al nivel 4. H-01 y H-02 son prioritarios, porque hoy permiten que un usuario privilegiado lea o extraiga datos sensibles en texto plano.
 
 | ID | Hallazgo | Control | Acción propuesta | Responsable | Plazo | Resultado esperado |
-| --- | --- | --- | --- | --- | --- | --- |
+|---|---|---|---|---|---|---|
 | H-01 | XE no cifra exportaciones de Data Pump (ORA-00439); un archivo de exportación expone los datos en texto plano | A8.12, A8.10 | Prohibir exportaciones de `CLINICA` fuera de un procedimiento autorizado; cifrar el directorio de Data Pump a nivel de sistema operativo; borrar el archivo apenas se use; en producción, usar una edición con cifrado de Data Pump | DBA y oficial de seguridad | 30 días | Ningún archivo de exportación legible en texto plano; PR-21 en Cumple |
-| H-02 | `DBA_OPER` lee `PACIENTES` sin redacción, porque el rol DBA incluye SELECT ANY TABLE y EXEMPT REDACTION POLICY; sin Database Vault no hay control técnico que lo impida | A8.2, A8.11 | Reemplazar el rol DBA de `DBA_OPER` por un rol propio sin SELECT ANY TABLE, EXP\_FULL\_DATABASE ni EXEMPT REDACTION POLICY; reservar el rol DBA para una cuenta de emergencia con contraseña en custodia y uso auditado; evaluar Database Vault en Enterprise Edition | DBA y oficial de seguridad | 30 días | `DBA_OPER` ve la cédula redactada y 0 filas de `CONSULTAS` |
+| H-02 | `DBA_OPER` lee `PACIENTES` sin redacción, porque el rol DBA incluye SELECT ANY TABLE y EXEMPT REDACTION POLICY; sin Database Vault no hay control técnico que lo impida | A8.2, A8.11 | Reemplazar el rol DBA de `DBA_OPER` por un rol propio sin SELECT ANY TABLE, EXP_FULL_DATABASE ni EXEMPT REDACTION POLICY; reservar el rol DBA para una cuenta de emergencia con contraseña en custodia y uso auditado; evaluar Database Vault en Enterprise Edition | DBA y oficial de seguridad | 30 días | `DBA_OPER` ve la cédula redactada y 0 filas de `CONSULTAS` |
 | H-03 | La versión XE 21.3 no recibe parches de seguridad | A8.8 | Planificar la migración a una versión de Oracle con soporte y actualizaciones vigentes; revisar los boletines de seguridad de Oracle cada trimestre | DBA | 90 días | A8.8 en nivel 3, con versión soportada y revisión trimestral registrada |
 | H-04 | La auditoría opera en modo mixto y los registros no salen del servidor | A8.15, A5.33 | Habilitar la auditoría unificada pura y enviar los registros a un SIEM fuera del alcance del DBA | DBA y equipo de seguridad | 60 días | A8.15 y A5.33 en nivel 4 |
 | H-05 | La revisión de derechos de acceso se ejecuta de forma manual | A5.18 | Programar el script de inventario con `DBMS_SCHEDULER` cada mes y archivar el reporte firmado por el responsable | DBA | 30 días | A5.18 en nivel 4 |
@@ -399,12 +421,14 @@ El plan cierra los dos controles en estado Parcial, reduce el riesgo residual de
 
 Cada acción se verifica con la misma batería: al completarla se vuelve a ejecutar `ejecutar_todo.sh` y se actualiza la matriz de la sección 8, lo que inicia un nuevo ciclo PHVA.
 
+---
+
 ## 11. Uso ético y documentado de inteligencia artificial
 
 El proyecto se desarrolló con Claude en dos modalidades: el chat de claude.ai, para análisis, redacción y diseño, y Claude Code, para escribir y ejecutar scripts en el entorno local. La conversación fue continua, por lo que varios prompts son breves y dependen del contexto acumulado. Para respetar el requisito de prompt exacto, los mensajes se transcriben literalmente entre comillas y, a continuación, se describe el contexto en que se enviaron. Los prompts largos de Claude Code se describen en la tabla y su texto literal completo está en `ia/registro-prompts.md`.
 
 | N.º | Herramienta IA | Prompt exacto utilizado | Aporte de la IA | Validación / Corrección del estudiante | Fuente verificada |
-| --- | --- | --- | --- | --- | --- |
+|---|---|---|---|---|---|
 | IA-01 | Claude (chat) | "Debemos hacer esto, lo haremos de manera ordenada, primero quiero que analices todo el documento, con base en eso, haz un plan de trabajo, y luego iremos desarrollando las tareas de ese plan. Supongo que ciertas tareas es mejor hacerlas aqui y otras en claude code, incluye tambien eso en el plan". Contexto: enviado junto con el enunciado de la asignación en PDF. | Análisis del enunciado, plan de trabajo por fases y reparto entre chat y Claude Code | Verificado por el estudiante contra el enunciado; correcto, sin cambios | Enunciado del curso |
 | IA-02 | Claude Code | Prompt de la Fase 0 con siete instrucciones: crear el repositorio con su estructura de carpetas, README y .gitignore; iniciar el registro de prompts; escribir el script de solo lectura `00_verificar_entorno.sql`, ejecutarlo como SYSDBA en `CDB$ROOT` y `XEPDB1` y resumir las funciones disponibles; hacer el commit inicial. Texto literal completo en el registro, IA-02. | Estructura del repositorio, README y script de verificación del entorno | Verificado por el estudiante contra la documentación de Oracle; correcto, sin cambios | Oracle Database Reference 21c |
 | IA-03 | Claude (chat) | "Si quiero que la armes aquí como documento (exportable a PDF, y que crezca hasta ser el informe final)". Contexto: respuesta a la pregunta de si el marco teórico se redactaba como documento que evolucionaría hasta el informe o como texto para Word. | Introducción, marco teórico y referencias APA 7 | Verificado por el estudiante: cifras de ISO, Ley 8968 y año de la guía de seguridad de Oracle; correcto, sin cambios | ISO/IEC 27001:2022 y 27002:2022; Ley 8968; NIST SP 800-207 |
@@ -414,56 +438,60 @@ El proyecto se desarrolló con Claude en dos modalidades: el chat de claude.ai, 
 | IA-07 | Claude (chat) | "Ok, sigamos". Contexto: aprobación para pasar al diseño de la batería de pruebas y del prompt de implementación. | Batería de 26 pruebas y prompt de la Fase 5A | Verificado por el estudiante contra la documentación de Oracle; correcto, sin cambios | Oracle Security Guide 21c |
 | IA-08 | Claude Code | Prompt de la Fase 5A: reglas generales de ejecución y contraseñas fuera del repositorio; respaldo del pfile y ajuste de `sqlnet.ora`; scripts s01 a s07 para keystore TDE, esquema `CLINICA` cifrado y clasificado, perfil, roles y usuarios, VPD, Data Redaction, auditoría unificada y clon DEV enmascarado. Texto literal completo en el registro, IA-08. | Scripts de configuración s00 a s07 y su ejecución | Verificado por el estudiante con la ejecución de los scripts y sus evidencias; correcto, sin cambios | Oracle Advanced Security Guide 21c |
 | IA-09 | Claude (chat) | Salida completa de Claude Code de la Fase 5A pegada en el chat, con los objetos creados por cada script, el estado del keystore, las rutas de respaldo, los problemas corregidos y los pendientes, entre ellos el acceso de `DBA_OPER` a datos sin redacción. | Prompt de la Fase 5B e incorporación del riesgo residual de `DBA_OPER` al plan de remediación | Revisado por el estudiante; correcto, sin cambios | No aplica |
-| IA-10 | Claude Code | Prompt de la Fase 5B: cifrado e integridad de red y nodos invitados, prueba de AUTO\_LOGIN, RMAN con cifrado AES256, 17 scripts de verificación con veredicto por prueba, ejecución de las 26 pruebas y resumen de resultados. Texto literal completo en el registro, IA-10. | Configuración de red y RMAN, scripts v01 a v17 y ejecución de las 26 pruebas | Verificado por el estudiante con la ejecución de las pruebas y sus evidencias; correcto, sin cambios | Oracle Net Services y RMAN 21c |
+| IA-10 | Claude Code | Prompt de la Fase 5B: cifrado e integridad de red y nodos invitados, prueba de AUTO_LOGIN, RMAN con cifrado AES256, 17 scripts de verificación con veredicto por prueba, ejecución de las 26 pruebas y resumen de resultados. Texto literal completo en el registro, IA-10. | Configuración de red y RMAN, scripts v01 a v17 y ejecución de las 26 pruebas | Verificado por el estudiante con la ejecución de las pruebas y sus evidencias; correcto, sin cambios | Oracle Net Services y RMAN 21c |
 | IA-11 | Claude (chat) | Salida completa de Claude Code de la Fase 5B pegada en el chat, con los resultados de las 26 pruebas, el hallazgo PR-21 (ORA-00439), los ajustes de script y la prueba negativa del filtrado por nodo. | Resultados obtenidos, calificación de la matriz y plan de remediación | Verificado por el estudiante contra el resumen de pruebas; correcto, sin cambios | `evidencias/resumen_pruebas.md` |
 | IA-12 | Claude (chat) | "Sigamos". Contexto: instrucción para avanzar a la Fase 8, el artefacto HTML interactivo. | Prompt de la Fase 8 | Revisado por el estudiante; correcto, sin cambios | No aplica |
 | IA-13 | Claude Code | Prompt de la Fase 8: generador `build_data.py` que convierte el informe en datos, sitio HTML de 12 secciones con filtros, visor de scripts y modo de impresión, y verificación de conteos, enlaces y ausencia de contraseñas. Texto literal completo en el registro, IA-13. | Artefacto HTML interactivo y generador de datos | Revisado por el estudiante en el navegador; correcto, sin cambios | No aplica |
 | IA-14 | Claude (chat) | "Si". Contexto: aceptación de la propuesta de redactar el guion del video mientras Claude Code construía el artefacto. | Guion del video de 5 minutos (no utilizado: el profesor retiró el video de los entregables) | Revisado por el estudiante; correcto, sin cambios | No aplica |
 | IA-15 | Claude (chat) | Salida de Claude Code de la Fase 8 pegada en el chat, con los conteos por sección del artefacto y las verificaciones realizadas. | Sección 11, conclusiones y documento de preguntas para el profesor | Revisado por el estudiante; correcto, sin cambios | No aplica |
-| IA-16 | Claude (chat) | "Ya tenemos que entregar esto nada mas corrijamos mis promts \[...\] Hazlos que suenen mas elaborados. Insertale mi firma a la declaracion, y mi numero de cedula es \[omitido\]. dame el promt final para claude code tambien". Contexto: enviado con la imagen de la firma. | Contexto de cada prompt en esta tabla, manteniendo su texto literal; inserción de firma y cédula; prompt final de cierre | Revisado por el estudiante; correcto, sin cambios | No aplica |
+| IA-16 | Claude (chat) | "Ya tenemos que entregar esto nada mas corrijamos mis promts [...] Hazlos que suenen mas elaborados. Insertale mi firma a la declaracion, y mi numero de cedula es [omitido]. dame el promt final para claude code tambien". Contexto: enviado con la imagen de la firma. | Contexto de cada prompt en esta tabla, manteniendo su texto literal; inserción de firma y cédula; prompt final de cierre | Revisado por el estudiante; correcto, sin cambios | No aplica |
+| IA-17 | Claude Code | "Necesitamos hacer ciertos cambios. Mi profesor me dijo que debemos hacer 20 evaluaciones y que se debe ver la evolucion de la base de datos, como a amanera de historial, ademas de que la herramienta debe ser mas intuitiva se debe saber a simple vista overall "como se encuentra la bd', y por ejemplo en la matriz al yo cliquear en alguna tarea, riesgo o control me debe de mostrar informacion sobre ello". Contexto: enviado con una captura de la matriz. Ante la consulta sobre el origen de los datos, el estudiante indicó que fueran simulados, con una minileyenda, porque la base de datos ya no estaba disponible y no habría cambios reales entre corridas. | Historial de 20 evaluaciones (E-01 a E-19 simuladas, E-20 real), estado general, vista Evolución y panel de detalle en la matriz | Pendiente | Pendiente |
 
 ### Declaración jurada
 
 Yo, David Joel Soto Zuñiga, declaro que todo contenido generado con IA ha sido declarado en la tabla anterior, validado contra fuentes oficiales (ISO, documentación del motor de base de datos) y que asumo responsabilidad por su veracidad. Entiendo que omitir esta declaración constituye falta grave.
 
-Firma: [omitida en la copia del repositorio]
+Firma: *(firma manuscrita en el PDF original)*
 
 Cédula: [omitido]
 
 Fecha: 28 de octubre de 2026
 
+---
+
 ## 12. Conclusiones
 
-El marco protege la confidencialidad de los datos clínicos frente a usuarios comunes, pero el DBA sigue siendo el mayor riesgo residual, lo que confirma que R-CONF-01 es el riesgo más crítico.
-
+- El marco protege la confidencialidad de los datos clínicos frente a usuarios comunes, pero el DBA sigue siendo el mayor riesgo residual, lo que confirma que R-CONF-01 es el riesgo más crítico.
 - De los 15 controles solicitados, 14 alcanzaron el nivel 3 con evidencia ejecutada y solo A8.12 quedó en Parcial. De los dos complementarios, A8.24 cumple y A8.8 queda en Parcial.
 - Las pruebas funcionales negativas aportaron la evidencia más sólida: no basta con que un control esté configurado, hay que demostrar que bloquea. La prueba PR-26 lo ilustra: el nombre de un paciente no aparece en el archivo cifrado y sí en uno de control sin cifrar.
 - La edición del motor condiciona el alcance de los controles. Oracle XE no incluye Database Vault, cifrado de exportaciones ni parches de seguridad, por lo que la confidencialidad frente al DBA depende de controles compensatorios y de las acciones H-01 a H-03.
 - Los controles implementados son evidencia técnica verificable de las obligaciones de seguridad y confidencialidad de la Ley 8968.
 - El ciclo PHVA no termina con este informe: cada acción de remediación se verifica con la misma batería de pruebas y actualiza la matriz de evaluación.
 
+---
+
 ## Referencias
 
-Asamblea Legislativa de la República de Costa Rica. (2011). *Ley n.º 8968: Protección de la persona frente al tratamiento de sus datos personales*. <https://pwc.com/ia/es/servicios/Regulacion-Legal/CR-Ley-n-8968.pdf>
+Asamblea Legislativa de la República de Costa Rica. (2011). *Ley n.º 8968: Protección de la persona frente al tratamiento de sus datos personales*. https://pwc.com/ia/es/servicios/Regulacion-Legal/CR-Ley-n-8968.pdf
 
-Hall, T. (s.f.). *Auditing enhancements in Oracle Database 21c*. Oracle-Base. <https://oracle-base.com/articles/21c/auditing-enhancements-21c>
+Hall, T. (s.f.). *Auditing enhancements in Oracle Database 21c*. Oracle-Base. https://oracle-base.com/articles/21c/auditing-enhancements-21c
 
 International Organization for Standardization. (2022a). *Information security, cybersecurity and privacy protection — Information security management systems — Requirements* (ISO/IEC 27001:2022).
 
 International Organization for Standardization. (2022b). *Information security, cybersecurity and privacy protection — Information security controls* (ISO/IEC 27002:2022).
 
-Joint Task Force. (2020). *Security and privacy controls for information systems and organizations* (NIST Special Publication 800-53, Rev. 5). National Institute of Standards and Technology. <https://doi.org/10.6028/NIST.SP.800-53r5>
+Joint Task Force. (2020). *Security and privacy controls for information systems and organizations* (NIST Special Publication 800-53, Rev. 5). National Institute of Standards and Technology. https://doi.org/10.6028/NIST.SP.800-53r5
 
-Kertos. (s.f.). *ISO 27001 controls*. <https://www.kertos.io/en/blog/iso-27001-controls>
+Kertos. (s.f.). *ISO 27001 controls*. https://www.kertos.io/en/blog/iso-27001-controls
 
-Oracle. (s.f.). *Oracle Database unified audit: Best practice guidelines* \[Documento técnico\]. <https://www.oracle.com/docs/tech/dbsec/unified-audit-best-practice-guidelines.pdf>
+Oracle. (s.f.). *Oracle Database unified audit: Best practice guidelines* [Documento técnico]. https://www.oracle.com/docs/tech/dbsec/unified-audit-best-practice-guidelines.pdf
 
-Oracle. (2021). *Oracle Database security guide, 21c*. <https://docs.oracle.com/en/database/oracle/oracle-database/21/dbseg/>
+Oracle. (2021). *Oracle Database security guide, 21c*. https://docs.oracle.com/en/database/oracle/oracle-database/21/dbseg/
 
-Oracle. (2024). *Oracle Database advanced security guide, 21c* (F31829-15). <https://docs.oracle.com/en/database/oracle/oracle-database/21/asoag/>
+Oracle. (2024). *Oracle Database advanced security guide, 21c* (F31829-15). https://docs.oracle.com/en/database/oracle/oracle-database/21/asoag/
 
-Poder Ejecutivo. (2012). *Decreto Ejecutivo n.º 37554-JP: Reglamento a la Ley de Protección de la Persona frente al Tratamiento de sus Datos Personales*. <https://www.tse.go.cr/pdf/normativa/reglamentoleyproteccionpersona.pdf>
+Poder Ejecutivo. (2012). *Decreto Ejecutivo n.º 37554-JP: Reglamento a la Ley de Protección de la Persona frente al Tratamiento de sus Datos Personales*. https://www.tse.go.cr/pdf/normativa/reglamentoleyproteccionpersona.pdf
 
-Rose, S., Borchert, O., Mitchell, S., & Connelly, S. (2020). *Zero trust architecture* (NIST Special Publication 800-207). National Institute of Standards and Technology. <https://doi.org/10.6028/NIST.SP.800-207>
+Rose, S., Borchert, O., Mitchell, S., & Connelly, S. (2020). *Zero trust architecture* (NIST Special Publication 800-207). National Institute of Standards and Technology. https://doi.org/10.6028/NIST.SP.800-207
 
-The Art of Service. (s.f.). *ISO 27001:2022: What changed and what it means for your ISMS*. <https://theartofservice.com/blog/iso-27001-2022-changes>
+The Art of Service. (s.f.). *ISO 27001:2022: What changed and what it means for your ISMS*. https://theartofservice.com/blog/iso-27001-2022-changes

@@ -4,10 +4,12 @@
 build_data.py  -  Genera artefacto/data.js a partir de la fuente oficial.
 
 Fuente única de datos:
-  - docs/informe.md  : informe oficial (tablas de las secciones 3 a 10 y Referencias).
+  - docs/informe_iso27001_oracle.md : informe oficial (tablas de las secciones 3 a 10 y Referencias).
   - sql/01_setup/ y sql/02_verificacion/ : texto de los scripts (.sql, .sh, .rman, .md).
   - ia/registro-prompts.md : registro de uso de IA.
   - evidencias/*.txt : solo para resolver el archivo de evidencia de cada prueba.
+  - data/historial_evaluaciones.json : historial de 20 evaluaciones. E-01 a E-19 son
+    simuladas; E-20 es la corrida real y debe coincidir con el informe.
 
 Salida:
   - artefacto/data.js con "const DATA = {...};" (JSON embebido), para que la
@@ -25,8 +27,9 @@ import sys
 import unicodedata
 
 RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-INFORME = os.path.join(RAIZ, 'docs', 'informe.md')
+INFORME = os.path.join(RAIZ, 'docs', 'informe_iso27001_oracle.md')
 REGISTRO = os.path.join(RAIZ, 'ia', 'registro-prompts.md')
+HISTORIAL = os.path.join(RAIZ, 'data', 'historial_evaluaciones.json')
 DIRS_SCRIPTS = ['sql/01_setup', 'sql/02_verificacion']
 DIR_EVIDENCIAS = os.path.join(RAIZ, 'evidencias')
 SALIDA = os.path.join(RAIZ, 'artefacto', 'data.js')
@@ -300,6 +303,57 @@ def construir_pruebas(lineas):
     return filas
 
 
+def construir_historial(pruebas, matriz):
+    """Acumula los cambios de cada evaluación y deriva el estado de los controles.
+
+    El estado sigue la regla de la sección 8.1: todas las pruebas del control
+    cumplen -> Cumple; alguna -> Parcial; ninguna -> No cumple. Un control sin
+    pruebas (A8.8) conserva el estado de la matriz.
+    """
+    fuente = json.loads(leer(HISTORIAL))
+    pruebas_por_control = {}
+    for p in pruebas:
+        pruebas_por_control.setdefault(p['control'], []).append(p['id'])
+    total = fuente['total_pruebas']
+    vigentes = set()
+    evaluaciones = []
+    for e in fuente['evaluaciones']:
+        previo = len(vigentes)
+        vigentes |= set(e['suben'])
+        vigentes -= set(e['bajan'])
+        controles = {}
+        for m in matriz['rows']:
+            codigo = m['control_codigo']
+            ids = pruebas_por_control.get(codigo, [])
+            cumplen = len([i for i in ids if i in vigentes])
+            if not ids:
+                controles[codigo] = m['estado']
+            elif cumplen == len(ids):
+                controles[codigo] = 'Cumple'
+            else:
+                controles[codigo] = 'Parcial' if cumplen else 'No cumple'
+        evaluaciones.append(dict(
+            e,
+            cumplen=sorted(vigentes),
+            total_cumple=len(vigentes),
+            total=total,
+            pct=round(100 * len(vigentes) / total),
+            variacion=len(vigentes) - previo,
+            controles=controles,
+        ))
+
+    # La última evaluación es la corrida real: debe coincidir con el informe.
+    ultima = evaluaciones[-1]
+    reales = sorted(p['id'] for p in pruebas if p['estado'] == 'Cumple')
+    if ultima['cumplen'] != reales:
+        print('  AVISO: %s no coincide con la sección 9.4 del informe' % ultima['id'], file=sys.stderr)
+    for m in matriz['rows']:
+        if ultima['controles'][m['control_codigo']] != m['estado']:
+            print('  AVISO: %s difiere de la matriz en %s' % (ultima['id'], m['control_codigo']),
+                  file=sys.stderr)
+    return {'leyenda': fuente['leyenda'], 'evaluaciones': evaluaciones}
+
+
 def construir_referencias(texto):
     m = re.search(r'##\s+Referencias\s*(.*)$', texto, re.S)
     refs = []
@@ -401,13 +455,13 @@ def construir_meta(texto):
         if l.startswith('# '):
             titulo = l[2:].strip()
             break
-    # Línea de curso: 'Administración... · Escuela... · Prof. ... · II Ciclo 2026'
+    # Línea de curso: 'Autor · Administración... · Escuela... · Prof. ... · II Ciclo 2026'
     curso = escuela = profesor = ciclo = ''
     for l in lineas:
         if '·' in l and 'Prof.' in l:
-            partes = [p.strip() for p in l.split('·')]
-            if len(partes) >= 1:
-                curso = partes[0]
+            partes = [p.strip().strip('*').strip() for p in l.split('·')]
+            if len(partes) >= 2:
+                curso = partes[1]
             for p in partes:
                 if p.lower().startswith('escuela') or 'Universidad' in p:
                     escuela = p
@@ -452,6 +506,7 @@ def main():
     data['matriz'] = enriquecer_matriz(seccion(lineas, '### 8.2 Matriz'))
     data['usuarios'] = seccion(lineas, '### 9.1 Usuarios y roles de prueba')
     data['pruebas'] = construir_pruebas(lineas)
+    data['historial'] = construir_historial(data['pruebas'], data['matriz'])
     data['remediacion'] = seccion(lineas, '## 10. Plan de remediación')
     data['referencias'] = construir_referencias(texto)
     data['prompts'] = construir_prompts()
@@ -460,7 +515,7 @@ def main():
     os.makedirs(os.path.dirname(SALIDA), exist_ok=True)
     cuerpo = json.dumps(data, ensure_ascii=False, indent=2)
     with open(SALIDA, 'w', encoding='utf-8') as f:
-        f.write('// Generado por build_data.py a partir de docs/informe.md. No editar a mano.\n')
+        f.write('// Generado por build_data.py a partir de docs/informe_iso27001_oracle.md. No editar a mano.\n')
         f.write('const DATA = ')
         f.write(cuerpo)
         f.write(';\n')
@@ -482,6 +537,7 @@ def main():
         ('Matriz (8.2)', len(data['matriz']['rows'])),
         ('Usuarios (9.1)', len(data['usuarios']['rows'])),
         ('Pruebas (9.2+9.4)', len(data['pruebas'])),
+        ('Evaluaciones (historial)', len(data['historial']['evaluaciones'])),
         ('Remediación (10)', len(data['remediacion']['rows'])),
         ('Referencias', len(data['referencias'])),
         ('Prompts de IA', len(data['prompts']['rows'])),

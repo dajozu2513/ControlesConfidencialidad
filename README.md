@@ -21,7 +21,7 @@ iso27001-dba-confidencialidad/
   README.md               Este documento
   .gitignore              Exclusiones (wallets, credenciales, .env)
   docs/                   Marco teórico e informe final
-  data/                   Archivos JSON: riesgos, tareas, controles, matriz y pruebas
+  data/                   historial_evaluaciones.json: historial de 20 evaluaciones
   sql/
     00_entorno/           Scripts de solo lectura para verificar el entorno
     01_setup/             Scripts de configuración de los controles
@@ -128,11 +128,15 @@ El script imprime al final todas las líneas `RESULTADO PR-XX`. El resumen conso
 
 ## Artefacto interactivo (`artefacto/`)
 
-El sitio HTML de `artefacto/` presenta todo el proyecto (resumen, riesgos, tareas, mapeo ISO, matriz, batería de pruebas, scripts, remediación, uso de IA y referencias) a partir de una única fuente de datos.
+El sitio HTML de `artefacto/` presenta todo el proyecto (estado general, evolución, riesgos, tareas, mapeo ISO, matriz, batería de pruebas, scripts, remediación, uso de IA y referencias) a partir de una única fuente de datos. En la matriz, cada tarea, riesgo o control abre un panel con su detalle.
+
+### Historial de evaluaciones
+
+La vista Evolución muestra 20 evaluaciones definidas en `data/historial_evaluaciones.json`. **E-01 a E-19 son simuladas** con fines demostrativos, y la página lo indica con una leyenda; solo E-20 corresponde a la corrida real del 21 de octubre de 2026. Cada evaluación declara qué pruebas pasan a cumplir (`suben`) o dejan de cumplir (`bajan`); `build_data.py` acumula esos cambios, calcula el índice (porcentaje de pruebas que cumplen) y deriva el estado de cada control. Si E-20 deja de coincidir con las secciones 8.2 y 9.4 del informe, el script imprime un `AVISO`.
 
 ### Regenerar los datos
 
-La fuente oficial es `docs/informe.md`. El script `artefacto/build_data.py` (Python 3, solo biblioteca estándar) convierte sus tablas, el texto de los scripts y el registro de IA en `artefacto/data.js`. Tras cambiar el informe, basta con volver a ejecutarlo:
+La fuente oficial es `docs/informe_iso27001_oracle.md`. El script `artefacto/build_data.py` (Python 3, solo biblioteca estándar) convierte sus tablas, el texto de los scripts y el registro de IA en `artefacto/data.js`. Tras cambiar el informe, basta con volver a ejecutarlo:
 
 ```bash
 python artefacto/build_data.py

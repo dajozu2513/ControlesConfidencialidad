@@ -113,6 +113,374 @@
   function nivelClase(n) { return n <= 6 ? 'bajo' : (n <= 12 ? 'medio' : 'alto'); }
   function nivelPalabra(n) { return n <= 6 ? 'Bajo' : (n <= 12 ? 'Medio' : 'Alto'); }
 
+  function kpi(n, titulo, detalle) {
+    var k = el('div', 'kpi'); k.appendChild(el('div', 'n', String(n))); k.appendChild(el('div', 't', titulo));
+    if (detalle) { var d = el('div', 'd'); d.innerHTML = detalle; k.appendChild(d); } return k;
+  }
+
+  // ---- Estado e historial -------------------------------------------------
+  var MESES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+  function fechaCorta(iso) {
+    var p = String(iso).split('-');
+    return parseInt(p[2], 10) + ' ' + MESES[parseInt(p[1], 10) - 1] + ' ' + p[0];
+  }
+  function evaluaciones() { return DATA.historial.evaluaciones; }
+  function estadoIndice(pct) {
+    if (pct >= 90) return { clase: 'cumple', icono: '✓', texto: 'Buen estado' };
+    if (pct >= 70) return { clase: 'parcial', icono: '!', texto: 'Requiere atención' };
+    return { clase: 'no', icono: '✕', texto: 'En riesgo' };
+  }
+  function claseEstado(e) { return e === 'Cumple' ? 'cumple' : (e === 'Parcial' ? 'parcial' : 'no'); }
+  function iconoEstado(e) { return e === 'Cumple' ? '✓' : (e === 'Parcial' ? '~' : '✕'); }
+  function conSigno(n) { return (n > 0 ? '+' : '') + n; }
+  function contarEstados(controles) {
+    var c = { Cumple: 0, Parcial: 0, 'No cumple': 0 };
+    Object.keys(controles).forEach(function (k) { c[controles[k]]++; });
+    return c;
+  }
+  function miniLeyenda() { return el('p', 'mini-leyenda', DATA.historial.leyenda); }
+
+  function controlPorCodigo(codigo) { return DATA.controles.filter(function (c) { return c.codigo === codigo; })[0]; }
+  function matrizPorCodigo(codigo) { return DATA.matriz.rows.filter(function (m) { return m.control_codigo === codigo; })[0]; }
+  function hallazgosDe(codigo) {
+    return DATA.remediacion.rows.filter(function (h) {
+      return String(h.control).split(',').map(function (s) { return s.trim(); }).indexOf(codigo) >= 0;
+    });
+  }
+
+  // Línea de tendencia sin ejes para el encabezado del estado general.
+  function tendencia() {
+    var ev = evaluaciones(), W = 240, H = 64, m = 7;
+    function x(i) { return m + (W - 2 * m) * i / (ev.length - 1); }
+    function y(p) { return m + (H - 2 * m) * (1 - p / 100); }
+    var puntos = ev.map(function (e, i) { return x(i).toFixed(1) + ',' + y(e.pct).toFixed(1); }).join(' ');
+    var u = ev[ev.length - 1];
+    var w = el('div', 'tendencia');
+    w.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Tendencia del índice: de ' +
+      ev[0].pct + ' % a ' + u.pct + ' % en ' + ev.length + ' evaluaciones">' +
+      '<polyline class="graf-linea" points="' + puntos + '"/>' +
+      '<circle class="graf-punto" r="4" cx="' + x(ev.length - 1).toFixed(1) + '" cy="' + y(u.pct).toFixed(1) + '"/></svg>';
+    return w;
+  }
+
+  function encabezadoEstado() {
+    var ev = evaluaciones(), act = ev[ev.length - 1], prev = ev[ev.length - 2];
+    var est = estadoIndice(act.pct), c = contarEstados(act.controles), total = Object.keys(act.controles).length;
+    var hero = el('section', 'hero borde-' + est.clase);
+    hero.setAttribute('aria-label', 'Estado general de la base de datos');
+
+    var izq = el('div', 'hero-indice');
+    izq.appendChild(el('div', 'hero-etq', '¿Cómo se encuentra la base de datos?'));
+    var fila = el('div', 'hero-fila');
+    fila.appendChild(el('span', 'hero-n', act.pct + ' %'));
+    fila.appendChild(el('span', 'insignia hero-estado est-' + est.clase, est.icono + ' ' + est.texto));
+    izq.appendChild(fila);
+    izq.appendChild(el('p', 'hero-texto', act.total_cumple + ' de ' + act.total + ' pruebas cumplen. De ' + total +
+      ' controles, ' + c.Cumple + ' cumplen, ' + c.Parcial + ' son parciales y ' + c['No cumple'] + ' no cumplen.'));
+    izq.appendChild(el('p', 'mini-leyenda', 'Índice: porcentaje de pruebas que cumplen. Buen estado desde 90 %, requiere atención desde 70 %, en riesgo por debajo de 70 %.'));
+    hero.appendChild(izq);
+
+    var der = el('div', 'hero-evolucion');
+    der.appendChild(el('div', 'hero-etq', 'Evolución'));
+    der.appendChild(tendencia());
+    der.appendChild(el('div', 'hero-delta', ev[0].pct + ' % → ' + act.pct + ' % · ' +
+      conSigno(act.pct - prev.pct) + ' pts desde ' + prev.id));
+    var a = el('a', null, 'Ver las ' + ev.length + ' evaluaciones'); a.href = '#evolucion';
+    der.appendChild(a);
+    der.appendChild(miniLeyenda());
+    hero.appendChild(der);
+    return hero;
+  }
+
+  function panelAtencion() {
+    var act = evaluaciones()[evaluaciones().length - 1];
+    var grid = el('div', 'rejilla atencion');
+
+    var ctl = el('div', 'ficha');
+    ctl.appendChild(el('h4', null, 'Controles por atender'));
+    DATA.matriz.rows.filter(function (m) { return act.controles[m.control_codigo] !== 'Cumple'; }).forEach(function (m) {
+      var f = el('div', 'fila-aviso');
+      f.appendChild(chipDetalle('control', m.control_codigo, m.control));
+      f.appendChild(insigniaEstado(act.controles[m.control_codigo]));
+      ctl.appendChild(f);
+    });
+    grid.appendChild(ctl);
+
+    var hal = el('div', 'ficha');
+    hal.appendChild(el('h4', null, 'Hallazgos prioritarios'));
+    DATA.remediacion.rows.filter(function (h) { return h.id === 'H-01' || h.id === 'H-02'; }).forEach(function (h) {
+      var f = el('div', 'fila-aviso');
+      var t = el('div'); t.innerHTML = '<strong>' + esc(h.id) + '.</strong> ' + fmt(h.hallazgo);
+      f.appendChild(t);
+      f.appendChild(el('span', 'insignia est-parcial', h.plazo));
+      hal.appendChild(f);
+    });
+    grid.appendChild(hal);
+    return grid;
+  }
+
+  function tarjetasRiesgo() {
+    var grid = el('div', 'rejilla riesgos-estado');
+    DATA.riesgos.rows.forEach(function (r) {
+      var ctrls = DATA.matriz.rows.filter(function (m) { return m.riesgos_list.indexOf(r.id) >= 0; });
+      var ok = ctrls.filter(function (m) { return m.estado === 'Cumple'; }).length;
+      var b = el('button', 'riesgo-tarjeta'); b.type = 'button'; b.setAttribute('aria-haspopup', 'dialog');
+      b.appendChild(el('span', 'riesgo-id', r.id));
+      b.appendChild(el('span', 'riesgo-nombre', r.riesgo));
+      var barra = el('span', 'barra-progreso'); var rel = el('i');
+      rel.style.width = Math.round(100 * ok / (ctrls.length || 1)) + '%';
+      barra.appendChild(rel); b.appendChild(barra);
+      b.appendChild(el('span', 'riesgo-pie', ok + ' de ' + ctrls.length + ' controles cumplen · Nivel ' + r.nivel));
+      b.addEventListener('click', function () { abrirDetalle('riesgo', r.id); });
+      grid.appendChild(b);
+    });
+    return grid;
+  }
+
+  // ---- Panel de detalle: tarea, riesgo o control ----------------------------
+  var panelDetalle = null, fondoDetalle = null, cuerpoDetalle = null, btnVolver = null;
+  var pilaDetalle = [], actualDetalle = null, origenDetalle = null;
+
+  function chipDetalle(tipo, id, texto) {
+    var b = el('button', 'chip enlace', texto); b.type = 'button';
+    b.setAttribute('aria-haspopup', 'dialog');
+    b.addEventListener('click', function () { abrirDetalle(tipo, id); });
+    return b;
+  }
+  function chips(tipo, ids) {
+    var w = el('div', 'chips');
+    ids.forEach(function (id) { w.appendChild(chipDetalle(tipo, id, id)); });
+    return w;
+  }
+  function bloqueDetalle(titulo, contenido) {
+    var s = el('div', 'detalle-bloque');
+    s.appendChild(el('h4', null, titulo));
+    if (typeof contenido === 'string') { var p = el('p'); p.innerHTML = contenido; s.appendChild(p); }
+    else s.appendChild(contenido);
+    cuerpoDetalle.appendChild(s);
+  }
+  function tituloDetalle(etiqueta, texto) {
+    cuerpoDetalle.appendChild(el('div', 'detalle-tipo', etiqueta));
+    var h = el('h3', null, texto); h.id = 'detalle-titulo';
+    cuerpoDetalle.appendChild(h);
+  }
+  function chipsControl(codigos) {
+    var w = el('div', 'chips');
+    codigos.forEach(function (cod) {
+      var m = matrizPorCodigo(cod);
+      w.appendChild(chipDetalle('control', cod, iconoEstado(m.estado) + ' ' + m.control));
+    });
+    return w;
+  }
+
+  var pintores = {
+    tarea: function (id) {
+      var t = DATA.tareas.rows.filter(function (x) { return x.id === id; })[0];
+      tituloDetalle('Tarea del DBA · ' + t.id, t.tarea);
+      bloqueDetalle('Qué hace el DBA', fmt(t.actividad_del_dba_en_la_clinica));
+      bloqueDetalle('Riesgos relacionados', chips('riesgo', t.riesgos_list));
+      bloqueDetalle('Controles que la protegen', chipsControl(DATA.controles.filter(function (c) {
+        return c.tareas_list.indexOf(t.id) >= 0;
+      }).map(function (c) { return c.codigo; })));
+    },
+    riesgo: function (id) {
+      var r = DATA.riesgos.rows.filter(function (x) { return x.id === id; })[0];
+      tituloDetalle('Riesgo · ' + r.id, r.riesgo);
+      var e = el('div', 'chips');
+      e.appendChild(el('span', 'insignia est-' + (r.nivel_num <= 6 ? 'cumple' : (r.nivel_num <= 12 ? 'parcial' : 'no')), 'Nivel ' + r.nivel));
+      e.appendChild(el('span', 'chip', 'Probabilidad ' + r.p));
+      e.appendChild(el('span', 'chip', 'Impacto ' + r.i));
+      cuerpoDetalle.appendChild(e);
+      bloqueDetalle('Escenario en la clínica', fmt(r.escenario_en_la_clinica));
+      bloqueDetalle('Activo afectado', fmt(r.activo_afectado));
+      bloqueDetalle('Tareas relacionadas', chips('tarea', DATA.tareas.rows.filter(function (t) {
+        return t.riesgos_list.indexOf(r.id) >= 0;
+      }).map(function (t) { return t.id; })));
+      bloqueDetalle('Controles que lo mitigan', chipsControl(DATA.controles.filter(function (c) {
+        return c.riesgos_list.indexOf(r.id) >= 0;
+      }).map(function (c) { return c.codigo; })));
+    },
+    control: function (codigo) {
+      var c = controlPorCodigo(codigo), m = matrizPorCodigo(codigo);
+      tituloDetalle('Control · ' + c.tema_label, c.codigo + ' ' + c.nombre);
+      var e = el('div', 'chips');
+      e.appendChild(insigniaEstado(m.estado));
+      e.appendChild(el('span', 'chip', 'Madurez ' + m.criterio_0_4));
+      cuerpoDetalle.appendChild(e);
+      bloqueDetalle('Por qué importa', fmt(c.justificacion));
+      bloqueDetalle('Cómo se implementa', fmt(c.implementacion));
+
+      var ev = evaluaciones(), tira = el('div');
+      var celdas = el('div', 'tira');
+      ev.forEach(function (x) {
+        var est = x.controles[codigo];
+        var s = el('span', 'est-' + claseEstado(est), iconoEstado(est));
+        s.title = x.id + ' · ' + fechaCorta(x.fecha) + ': ' + est;
+        celdas.appendChild(s);
+      });
+      tira.appendChild(celdas);
+      tira.appendChild(el('div', 'tira-pie', ev[0].id + ' → ' + ev[ev.length - 1].id));
+      tira.appendChild(miniLeyenda());
+      bloqueDetalle('Evolución', tira);
+
+      var prs = DATA.pruebas.filter(function (p) { return p.control === codigo; });
+      if (prs.length) {
+        var lista = el('div');
+        prs.forEach(function (p) {
+          var f = el('div', 'fila-prueba');
+          var cab = el('div', 'fila-prueba-cab');
+          cab.appendChild(el('strong', null, p.id)); cab.appendChild(insigniaEstado(p.estado));
+          f.appendChild(cab);
+          var d = el('div'); d.innerHTML = fmt(p.obtenido); f.appendChild(d);
+          lista.appendChild(f);
+        });
+        bloqueDetalle('Pruebas', lista);
+      } else {
+        bloqueDetalle('Pruebas', 'Sin prueba propia: se documenta con un script informativo.');
+      }
+      var hs = hallazgosDe(codigo);
+      if (hs.length) {
+        var lh = el('div');
+        hs.forEach(function (h) {
+          var p = el('p'); p.innerHTML = '<strong>' + esc(h.id) + ' (' + esc(h.plazo) + ').</strong> ' + fmt(h.accion_propuesta);
+          lh.appendChild(p);
+        });
+        bloqueDetalle('Remediación pendiente', lh);
+      }
+      bloqueDetalle('Tareas relacionadas', chips('tarea', c.tareas_list));
+      bloqueDetalle('Riesgos relacionados', chips('riesgo', c.riesgos_list));
+
+      var ver = el('div', 'chips');
+      if (m.evidencia_archivo) {
+        var a = el('a', null, m.evidencia_archivo.replace('evidencias/', ''));
+        a.href = '../' + m.evidencia_archivo; a.target = '_blank'; a.rel = 'noopener';
+        ver.appendChild(a);
+      }
+      bloqueDetalle('Evidencia', ver);
+    }
+  };
+
+  function crearDetalle() {
+    fondoDetalle = el('div', 'detalle-fondo'); fondoDetalle.hidden = true;
+    fondoDetalle.addEventListener('click', cerrarDetalle);
+    panelDetalle = el('aside', 'detalle'); panelDetalle.hidden = true; panelDetalle.tabIndex = -1;
+    panelDetalle.setAttribute('role', 'dialog'); panelDetalle.setAttribute('aria-modal', 'true');
+    panelDetalle.setAttribute('aria-labelledby', 'detalle-titulo');
+    var cab = el('div', 'detalle-cab');
+    btnVolver = el('button', 'btn-detalle', '← Volver'); btnVolver.type = 'button';
+    btnVolver.addEventListener('click', function () {
+      var previo = pilaDetalle.pop();
+      if (previo) mostrarDetalle(previo.tipo, previo.id);
+    });
+    var cerrar = el('button', 'btn-detalle', '✕ Cerrar'); cerrar.type = 'button'; cerrar.style.marginLeft = 'auto';
+    cerrar.addEventListener('click', cerrarDetalle);
+    cab.appendChild(btnVolver); cab.appendChild(cerrar); panelDetalle.appendChild(cab);
+    cuerpoDetalle = el('div', 'detalle-cuerpo'); panelDetalle.appendChild(cuerpoDetalle);
+    panelDetalle.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') { cerrarDetalle(); return; }
+      if (e.key !== 'Tab') return;
+      var focos = Array.prototype.filter.call(panelDetalle.querySelectorAll('a, button'), function (x) { return !x.hidden; });
+      var pri = focos[0], ult = focos[focos.length - 1];
+      if (e.shiftKey && (document.activeElement === pri || document.activeElement === panelDetalle)) { e.preventDefault(); ult.focus(); }
+      else if (!e.shiftKey && document.activeElement === ult) { e.preventDefault(); pri.focus(); }
+    });
+    document.body.appendChild(fondoDetalle); document.body.appendChild(panelDetalle);
+  }
+
+  function mostrarDetalle(tipo, id) {
+    cuerpoDetalle.innerHTML = '';
+    pintores[tipo](id);
+    actualDetalle = { tipo: tipo, id: id };
+    btnVolver.hidden = pilaDetalle.length === 0;
+    panelDetalle.scrollTop = 0;
+    panelDetalle.focus();
+  }
+
+  function abrirDetalle(tipo, id) {
+    if (panelDetalle.hidden) {
+      origenDetalle = document.activeElement; pilaDetalle = [];
+      panelDetalle.hidden = false; fondoDetalle.hidden = false;
+      document.body.classList.add('detalle-abierto');
+    } else if (actualDetalle) {
+      pilaDetalle.push(actualDetalle);
+    }
+    mostrarDetalle(tipo, id);
+  }
+
+  function cerrarDetalle() {
+    panelDetalle.hidden = true; fondoDetalle.hidden = true;
+    document.body.classList.remove('detalle-abierto');
+    if (origenDetalle && document.contains(origenDetalle)) origenDetalle.focus();
+  }
+
+  // ---- Gráfico de evolución (SVG) --------------------------------------------
+  function graficoEvolucion(cont, sel, alElegir) {
+    var ev = evaluaciones();
+    var W = Math.max(cont.clientWidth || 760, 280), H = W < 520 ? 240 : 300;
+    var m = { t: 22, r: 18, b: 30, l: 42 }, iw = W - m.l - m.r, ih = H - m.t - m.b;
+    var paso = W < 520 ? 5 : (W < 760 ? 2 : 1);
+    function x(i) { return m.l + iw * i / (ev.length - 1); }
+    function y(p) { return m.t + ih * (1 - p / 100); }
+    var s = '<svg class="graf" width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H +
+      '" role="group" aria-label="Índice de confidencialidad por evaluación">';
+    [0, 50, 100].forEach(function (p) {
+      s += '<line class="graf-rejilla" x1="' + m.l + '" x2="' + (W - m.r) + '" y1="' + y(p) + '" y2="' + y(p) + '"/>' +
+        '<text class="graf-eje" x="' + (m.l - 8) + '" y="' + (y(p) + 4) + '" text-anchor="end">' + p + ' %</text>';
+    });
+    [70, 90].forEach(function (p) {
+      s += '<line class="graf-umbral" x1="' + m.l + '" x2="' + (W - m.r) + '" y1="' + y(p) + '" y2="' + y(p) + '"/>';
+    });
+    ev.forEach(function (e, i) {
+      if (i === 0 || (i + 1) % paso === 0) {
+        s += '<text class="graf-eje" x="' + x(i) + '" y="' + (H - 9) + '" text-anchor="middle">' + e.id.replace('E-', '') + '</text>';
+      }
+    });
+    s += '<line class="graf-cruz" hidden x1="0" x2="0" y1="' + m.t + '" y2="' + (m.t + ih) + '"/>';
+    s += '<polyline class="graf-linea" points="' + ev.map(function (e, i) { return x(i).toFixed(1) + ',' + y(e.pct).toFixed(1); }).join(' ') + '"/>';
+    s += '<circle class="graf-seleccion" r="8" cx="' + x(sel) + '" cy="' + y(ev[sel].pct) + '"/>';
+    ev.forEach(function (e, i) {
+      if (e.tipo === 'regresion') {
+        s += '<rect class="graf-regresion" width="10" height="10" x="' + (x(i) - 5) + '" y="' + (y(e.pct) - 5) +
+          '" transform="rotate(45 ' + x(i) + ' ' + y(e.pct) + ')"/>';
+      } else {
+        s += '<circle class="graf-punto" r="4" cx="' + x(i) + '" cy="' + y(e.pct) + '"/>';
+      }
+    });
+    var ult = ev.length - 1;
+    s += '<text class="graf-valor" x="' + x(0) + '" y="' + (y(ev[0].pct) - 12) + '">' + ev[0].pct + ' %</text>';
+    s += '<text class="graf-valor" x="' + x(ult) + '" y="' + (y(ev[ult].pct) - 12) + '" text-anchor="end">' + ev[ult].pct + ' %</text>';
+    var banda = iw / (ev.length - 1);
+    ev.forEach(function (e, i) {
+      s += '<rect class="graf-zona" tabindex="0" role="button" data-i="' + i + '" x="' + (x(i) - banda / 2) + '" y="' + m.t +
+        '" width="' + banda + '" height="' + ih + '" aria-label="' + esc(e.id + ', ' + fechaCorta(e.fecha) + ': ' + e.evento + ', ' + e.pct + ' %') + '"/>';
+    });
+    s += '</svg><div class="graf-tip" hidden></div>';
+    cont.innerHTML = s;
+
+    var tip = cont.querySelector('.graf-tip'), cruz = cont.querySelector('.graf-cruz');
+    function mostrar(i) {
+      var e = ev[i];
+      tip.innerHTML = '<strong>' + esc(e.id) + '</strong> · ' + esc(fechaCorta(e.fecha)) + '<br>' + esc(e.evento) +
+        '<br>' + e.total_cumple + ' de ' + e.total + ' pruebas · ' + e.pct + ' %';
+      tip.hidden = false;
+      tip.style.left = Math.max(0, Math.min(x(i) - tip.offsetWidth / 2, W - tip.offsetWidth)) + 'px';
+      tip.style.top = Math.max(0, y(e.pct) - tip.offsetHeight - 14) + 'px';
+      cruz.setAttribute('x1', x(i)); cruz.setAttribute('x2', x(i)); cruz.removeAttribute('hidden');
+    }
+    function ocultar() { tip.hidden = true; cruz.setAttribute('hidden', ''); }
+    Array.prototype.forEach.call(cont.querySelectorAll('.graf-zona'), function (z) {
+      var i = parseInt(z.getAttribute('data-i'), 10);
+      z.addEventListener('mouseenter', function () { mostrar(i); });
+      z.addEventListener('focus', function () { mostrar(i); });
+      z.addEventListener('mouseleave', ocultar);
+      z.addEventListener('blur', ocultar);
+      z.addEventListener('click', function () { alElegir(i); });
+      z.addEventListener('keydown', function (ev2) {
+        if (ev2.key === 'Enter' || ev2.key === ' ') { ev2.preventDefault(); alElegir(i); }
+      });
+    });
+  }
+
   // ---- Vistas -----------------------------------------------------------
   var vistas = [];
   function vista(id, titulo, subtitulo, render) { vistas.push({ id: id, titulo: titulo, subtitulo: subtitulo, render: render }); }
@@ -124,20 +492,20 @@
     return frag;
   }
 
-  // 1. Resumen
-  vista('resumen', 'Resumen', null, function () {
+  // 1. Estado general
+  vista('resumen', 'Estado general', null, function () {
     var f = document.createDocumentFragment();
     var m = DATA.meta;
     f.appendChild(el('h1', null, m.titulo));
     f.appendChild(el('p', 'subtitulo', [m.curso, m.escuela, 'Prof. ' + m.profesor, m.ciclo].filter(Boolean).join(' · ')));
 
-    var ficha = el('div', 'ficha');
-    var dl = el('dl', 'meta-lista');
-    [['Autor', m.autor], ['Curso', m.curso], ['Profesor', m.profesor], ['Ciclo', m.ciclo], ['Fecha', m.fecha]].forEach(function (p) {
-      var d = el('div'); d.appendChild(el('dt', null, p[0])); d.appendChild(el('dd', null, p[1])); dl.appendChild(d);
-    });
-    ficha.appendChild(dl); f.appendChild(ficha);
+    f.appendChild(encabezadoEstado());
+    f.appendChild(el('h3', null, 'Qué requiere atención'));
+    f.appendChild(panelAtencion());
+    f.appendChild(el('h3', null, 'Protección frente a cada riesgo'));
+    f.appendChild(tarjetasRiesgo());
 
+    f.appendChild(el('h3', null, 'Alcance del marco'));
     // Indicadores calculados desde los datos.
     var estadosMatriz = { Cumple: 0, Parcial: 0, 'No cumple': 0 };
     DATA.matriz.rows.forEach(function (r) { estadosMatriz[r.estado] = (estadosMatriz[r.estado] || 0) + 1; });
@@ -145,10 +513,6 @@
     DATA.pruebas.forEach(function (p) { estadosPr[p.estado] = (estadosPr[p.estado] || 0) + 1; });
 
     var kpis = el('div', 'rejilla kpis');
-    function kpi(n, titulo, detalle) {
-      var k = el('div', 'kpi'); k.appendChild(el('div', 'n', String(n))); k.appendChild(el('div', 't', titulo));
-      if (detalle) { var d = el('div', 'd'); d.innerHTML = detalle; k.appendChild(d); } return k;
-    }
     kpis.appendChild(kpi(DATA.controles.length, 'Controles evaluados',
       estadosMatriz.Cumple + ' Cumple · ' + estadosMatriz.Parcial + ' Parcial'));
     kpis.appendChild(kpi(DATA.pruebas.length, 'Pruebas ejecutadas',
@@ -167,6 +531,142 @@
       c.appendChild(sec); phva.appendChild(c);
     });
     f.appendChild(phva);
+
+    f.appendChild(el('h3', null, 'Datos del proyecto'));
+    var ficha = el('div', 'ficha');
+    var dl = el('dl', 'meta-lista');
+    [['Autor', m.autor], ['Curso', m.curso], ['Profesor', m.profesor], ['Ciclo', m.ciclo], ['Fecha', m.fecha]].forEach(function (p) {
+      var d = el('div'); d.appendChild(el('dt', null, p[0])); d.appendChild(el('dd', null, p[1])); dl.appendChild(d);
+    });
+    ficha.appendChild(dl); f.appendChild(ficha);
+    return f;
+  });
+
+  // Evolución: historial de evaluaciones
+  vista('evolucion', 'Evolución', 'Historial de las veinte evaluaciones: seleccione un punto para ver qué cambió.', function () {
+    var f = document.createDocumentFragment(); f.appendChild(cab(this));
+    var ev = evaluaciones(), act = ev[ev.length - 1], sel = ev.length - 1;
+    var regresiones = ev.filter(function (e) { return e.tipo === 'regresion'; });
+
+    var kpis = el('div', 'rejilla kpis');
+    kpis.appendChild(kpi(ev.length, 'Evaluaciones', fechaCorta(ev[0].fecha) + ' a ' + fechaCorta(act.fecha)));
+    kpis.appendChild(kpi(act.pct + ' %', 'Índice actual', act.total_cumple + ' de ' + act.total + ' pruebas cumplen'));
+    kpis.appendChild(kpi(conSigno(act.pct - ev[0].pct) + ' pts', 'Mejora total', 'Desde ' + ev[0].pct + ' % en ' + ev[0].id));
+    kpis.appendChild(kpi(regresiones.length, 'Regresiones', 'Todas corregidas en la evaluación siguiente'));
+    f.appendChild(kpis);
+
+    f.appendChild(el('h3', null, 'Índice de confidencialidad'));
+    var marco = el('div', 'ficha');
+    var graf = el('div', 'graf-cont'); marco.appendChild(graf);
+    var ley = el('div', 'leyenda');
+    ley.innerHTML = '<span><i class="ley-punto"></i>Evaluación</span>' +
+      '<span><i class="ley-regresion"></i>Regresión</span>' +
+      '<span><i class="ley-umbral"></i>Umbrales de 70 % y 90 %</span>';
+    marco.appendChild(ley);
+    marco.appendChild(miniLeyenda());
+    f.appendChild(marco);
+
+    var detalle = el('div', 'ficha eval-detalle');
+    detalle.setAttribute('aria-live', 'polite');
+    f.appendChild(el('h3', null, 'Evaluación seleccionada'));
+    f.appendChild(detalle);
+
+    function pintaGrafico() { graficoEvolucion(graf, sel, elegir); }
+
+    function chipsPrueba(ids) {
+      var w = el('div', 'chips');
+      ids.forEach(function (id) {
+        var p = DATA.pruebas.filter(function (x) { return x.id === id; })[0];
+        w.appendChild(chipDetalle('control', p.control, id + ' · ' + p.control));
+      });
+      return w;
+    }
+
+    function pintaDetalle() {
+      var e = ev[sel], c = contarEstados(e.controles);
+      detalle.innerHTML = '';
+      var cabeza = el('div', 'eval-cab');
+      cabeza.appendChild(el('h4', null, e.id + ' · ' + fechaCorta(e.fecha)));
+      var etq = { base: ['chip', 'Línea base'], mejora: ['insignia est-cumple', 'Mejora'], regresion: ['insignia est-no', 'Regresión'] }[e.tipo];
+      cabeza.appendChild(el('span', etq[0], etq[1]));
+      var est = estadoIndice(e.pct);
+      cabeza.appendChild(el('span', 'insignia est-' + est.clase, est.icono + ' ' + e.pct + ' % · ' + est.texto));
+      detalle.appendChild(cabeza);
+      detalle.appendChild(el('p', 'eval-evento', e.evento));
+      detalle.appendChild(el('p', null, e.detalle));
+      detalle.appendChild(el('p', 'eval-datos', e.total_cumple + ' de ' + e.total + ' pruebas cumplen · Controles: ' +
+        c.Cumple + ' cumplen, ' + c.Parcial + ' parciales, ' + c['No cumple'] + ' no cumplen'));
+      if (e.suben.length) { detalle.appendChild(el('div', 'etq', '✓ Pasaron a Cumple')); detalle.appendChild(chipsPrueba(e.suben)); }
+      if (e.bajan.length) { detalle.appendChild(el('div', 'etq', '✕ Dejaron de cumplir')); detalle.appendChild(chipsPrueba(e.bajan)); }
+      if (e.origen === 'real') {
+        var a = el('a', null, 'Ver el resumen de pruebas'); a.href = '../evidencias/resumen_pruebas.md';
+        a.target = '_blank'; a.rel = 'noopener';
+        var p = el('p'); p.appendChild(a); detalle.appendChild(p);
+      }
+    }
+
+    // Evolución por control: una fila por control y una columna por evaluación.
+    f.appendChild(el('h3', null, 'Evolución por control'));
+    var wrap = el('div', 'tabla-wrap');
+    var t = el('table', 'evol');
+    var thead = document.createElement('thead'), trh = document.createElement('tr');
+    trh.appendChild(el('th', null, 'Control'));
+    var botones = [];
+    ev.forEach(function (e, i) {
+      var th = document.createElement('th');
+      var b = el('button', 'col-eval', e.id.replace('E-', '')); b.type = 'button';
+      b.setAttribute('aria-label', 'Ver evaluación ' + e.id);
+      b.addEventListener('click', function () { elegir(i); });
+      th.appendChild(b); trh.appendChild(th); botones.push(b);
+    });
+    thead.appendChild(trh); t.appendChild(thead);
+    var tbody = document.createElement('tbody');
+    DATA.matriz.rows.forEach(function (m) {
+      var tr = document.createElement('tr');
+      var th = document.createElement('th');
+      th.appendChild(chipDetalle('control', m.control_codigo, m.control));
+      tr.appendChild(th);
+      ev.forEach(function (e) {
+        var est = e.controles[m.control_codigo];
+        var td = el('td', 'est-' + claseEstado(est), iconoEstado(est));
+        td.title = e.id + ' · ' + m.control_codigo + ': ' + est;
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+    t.appendChild(tbody); wrap.appendChild(t); f.appendChild(wrap);
+    var ley2 = el('div', 'leyenda');
+    ['Cumple', 'Parcial', 'No cumple'].forEach(function (x) {
+      var s = el('span'); var i = el('i', 'ley-estado est-' + claseEstado(x), iconoEstado(x));
+      s.appendChild(i); s.appendChild(document.createTextNode(x)); ley2.appendChild(s);
+    });
+    f.appendChild(ley2);
+
+    f.appendChild(el('h3', null, 'Registro de evaluaciones'));
+    var filas = ev.map(function (e) {
+      return { id: e.id, fecha: fechaCorta(e.fecha), evento: e.evento, pruebas: e.total_cumple + ' / ' + e.total,
+        indice: e.pct + ' %', variacion: e.tipo === 'base' ? '—' : conSigno(e.variacion) };
+    });
+    var reg = tabla({ columns: [{ key: 'id', label: 'ID' }, { key: 'fecha', label: 'Fecha' }, { key: 'evento', label: 'Evento' },
+      { key: 'pruebas', label: 'Pruebas' }, { key: 'indice', label: 'Índice' }, { key: 'variacion', label: 'Cambio' }], rows: filas });
+    Array.prototype.forEach.call(reg.querySelectorAll('tbody tr'), function (tr, i) {
+      tr.style.cursor = 'pointer'; tr.tabIndex = 0;
+      function ir() { elegir(i); detalle.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+      tr.addEventListener('click', ir);
+      tr.addEventListener('keypress', function (e) { if (e.key === 'Enter') ir(); });
+    });
+    f.appendChild(reg);
+    f.appendChild(miniLeyenda());
+
+    function elegir(i) {
+      sel = i; pintaGrafico(); pintaDetalle();
+      botones.forEach(function (b, j) { b.classList.toggle('activo', j === i); });
+      var z = graf.querySelector('.graf-zona[data-i="' + i + '"]');
+      if (z && document.activeElement === document.body) z.focus({ preventScroll: true });
+    }
+    this.alMostrar = pintaGrafico;
+    pintaDetalle();
+    botones[sel].classList.add('activo');
     return f;
   });
 
@@ -192,9 +692,12 @@
     var f = document.createDocumentFragment(); f.appendChild(cab(this));
     f.appendChild(tabla(DATA.riesgos, {
       omitir: ['nivel_num', 'nivel_label', 'p_num', 'i_num'],
-      render: { nivel: function (v, r) {
-        return el('span', 'insignia est-' + (r.nivel_num <= 6 ? 'cumple' : (r.nivel_num <= 12 ? 'parcial' : 'no')), v);
-      } }
+      render: {
+        id: function (v) { return chipDetalle('riesgo', v, v); },
+        nivel: function (v, r) {
+          return el('span', 'insignia est-' + (r.nivel_num <= 6 ? 'cumple' : (r.nivel_num <= 12 ? 'parcial' : 'no')), v);
+        }
+      }
     }));
 
     f.appendChild(el('h3', null, 'Mapa de calor'));
@@ -369,7 +872,7 @@
   }
 
   // 7. Matriz de evaluación
-  vista('matriz', 'Matriz de evaluación', 'Madurez (0 a 4) y estado por control. La escala se muestra arriba.', function () {
+  vista('matriz', 'Matriz de evaluación', 'Madurez (0 a 4) y estado por control. Haga clic en una tarea, un riesgo o un control para ver su detalle.', function () {
     var f = document.createDocumentFragment(); f.appendChild(cab(this));
     f.appendChild(el('h3', null, 'Escala de madurez'));
     f.appendChild(tabla(DATA.escala));
@@ -392,6 +895,9 @@
       cont.appendChild(tabla({ columns: DATA.matriz.columns, rows: rows }, {
         omitir: ['control_codigo', 'control_nombre', 'nivel_num', 'nivel_label', 'tareas_list', 'riesgos_list', 'evidencia_archivo'],
         render: {
+          tarea: function (v, r) { return chips('tarea', r.tareas_list); },
+          riesgo: function (v, r) { return chips('riesgo', r.riesgos_list); },
+          control: function (v, r) { return chipDetalle('control', r.control_codigo, v); },
           criterio_0_4: function (v, r) { return el('span', 'insignia madurez est-' + (r.estado === 'Cumple' ? 'cumple' : (r.estado === 'Parcial' ? 'parcial' : 'no')), v); },
           evidencia: function (v, r) {
             if (!r.evidencia_archivo) return fmt(v);
@@ -438,6 +944,7 @@
       ];
       cont.appendChild(tabla({ columns: cols, rows: rows }, {
         render: {
+          control: function (v) { return chipDetalle('control', v, v); },
           estado: function (v) { return insigniaEstado(v); },
           evidencia: function (v) {
             if (!v) return document.createTextNode('—');
@@ -590,6 +1097,7 @@
       sec.classList.toggle('activa', act);
       a.classList.toggle('activo', act);
       if (act) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+      if (act && v.alMostrar) v.alMostrar();
     });
     var main = document.getElementById('contenido');
     if (main) main.scrollTop = 0;
@@ -634,10 +1142,15 @@
       return;
     }
     initTema();
+    crearDetalle();
     construir();
     activar((location.hash || '').replace('#', '') || vistas[0].id);
 
     window.addEventListener('hashchange', function () { activar(location.hash.replace('#', '')); });
+    window.addEventListener('resize', function () {
+      var v = vistas.filter(function (x) { return location.hash === '#' + x.id; })[0];
+      if (v && v.alMostrar) v.alMostrar();
+    });
     document.getElementById('btn-menu').addEventListener('click', function () {
       var nav = document.getElementById('nav'); var abierto = nav.classList.toggle('abierto');
       this.setAttribute('aria-expanded', abierto ? 'true' : 'false');
